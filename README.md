@@ -16,25 +16,8 @@
 2. **基于单 KV CAS 的无锁并发:** 传统文件系统极度依赖复杂的并发锁（如 VFS 的 i_mutex）。我们的设计亮点在于：通过分配新的 Chunk OID 和写时复制 (Copy-on-Write, CoW)，将对文件数据的就地修改 (In-place update) 转化为对 Inode 映射表指针的原子替换 (CAS)。这在多核并发场景下能极大地提升吞吐量。
 3. **极致的 I/O 路径:** 结合 SPDK 和大页内存，数据的流动是从用户态应用的 Buffer 直接 DMA 到底层 NVMe 设备的 KV 槽位中，做到了真正的 Zero-Copy。
 
-## 三、 架构设计的挑战与演进方向
+## 三、 详细架构与演进方向
 
-在将此概念模型落地为工业级存储产品时，我们面临以下核心挑战，这也是后续设计的重点方向：
+本项目的分层架构设计、元数据（Inode/Dentry/Superblock）管理细节、KV 大小限制的应对策略，以及工程落地中面临的核心挑战（如 RMW 写放大、WAL 瓶颈、内存开销等）和相应的演进方案，已详细记录在专门的设计文档中。
 
-### 1. RMW (读-改-写) 带来的写放大灾难
-*   **挑战:** 如果底层 NVMe KV 强制要求 4KB 对齐或更糟的 1MB/4MB Value 大小，当用户仅调用 `write(fd, buf, 10)` 修改 10 个字节时，我们需要读出整个 Chunk，修改 10 字节，再申请一个新 OID 写回，最后 CAS 更新 Inode。
-*   **演进方案:** 必须在内存中引入精密的 **Page Cache / Buffer Pool 设计**。吸收碎片化的随机写，合并为顺序的大块 KV Put，这不仅关乎性能，更关乎 SSD 的寿命。
-
-### 2. 崩溃一致性 (Crash Consistency) 与复杂命名空间操作
-*   **挑战:** 用 Write-Ahead Logging (WAL) 来解决 `Rename` 等涉及多个 KV 操作的原子性时，如果 WAL 是一个固定的 Key，多线程高并发写 WAL 时可能成为单点瓶颈。
-*   **演进方案:** 引入基于 Per-Core 的 Ring Buffer Log 机制，或者借鉴 LFS (Log-structured File System) 的思想，将元数据更新的 Intent 附加在数据写入的同一个 Batch 中。
-
-### 3. 内存消耗与元数据索引 (Memory Footprint)
-*   **挑战:** 在一个包含十亿个小文件的文件系统中，如果在内存中缓存完整的 Inode 和 Dentry 映射，内存开销巨大。
-*   **演进方案:** 设计一套高效的元数据缓存淘汰策略 (LRU/LFU)，并处理好内存元数据与 KV 设备上元数据的同步一致性。
-
-### 4. 硬件特性的不确定性 (Hardware Quirks)
-*   **挑战:** NVMe KV 标准在不同硬件厂商（Samsung, WDC 等）上的实现差异巨大，例如对范围扫描 (Scan) 的支持和 Value 大小限制各不相同。
-*   **演进方案:** 在 I/O 引擎之上构建一个 **HAL (Hardware Abstraction Layer)**，将特定的硬件怪癖屏蔽掉，避免核心的文件映射逻辑强绑定某一种 SSD 的特性。
-
----
-*更多详细架构设计请参阅 `DESIGN.md`*
+👉 **[请参阅详细架构设计文档：DESIGN.md](DESIGN.md)**
