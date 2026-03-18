@@ -22,6 +22,7 @@ include_directories(include)
 # 定义核心库
 add_library(kvfs_core SHARED
     src/kvfs.cpp
+    src/mock_kv_device.cpp
 )
 
 # 设置头文件可见性
@@ -30,8 +31,8 @@ target_include_directories(kvfs_core PUBLIC include)
 # -----------------------------------------------------------------------------
 # 可执行文件示例 / 单元测试 (可选)
 # -----------------------------------------------------------------------------
-# add_executable(kvfs_example examples/main.cpp)
-# target_link_libraries(kvfs_example PRIVATE kvfs_core)
+add_executable(kvfs_example examples/main.cpp)
+target_link_libraries(kvfs_example PRIVATE kvfs_core)
 
 # -----------------------------------------------------------------------------
 # 安装规则 (可选)
