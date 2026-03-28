@@ -112,7 +112,7 @@
 ### IO Operations Features (1 passing)
 | Feature | Commit |
 |---------|--------|
-| io-001: Write data to file at current offset | `TODO` |
+| io-001: Write data to file at current offset | `482054f` |
 
 ### Pending Features (35 failing)
 - `io-002` to `io-007`: IO operations (6 features)
@@ -156,12 +156,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| io-001 | Write data to file at current offset | `TODO` |
+| io-001 | Write data to file at current offset | `482054f` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | test: Add E2E test for io-001 Write operation |
+| `482054f` | test: Add E2E test for io-001 Write operation |
 
 ---
 
