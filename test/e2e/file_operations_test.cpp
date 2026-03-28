@@ -109,6 +109,48 @@ TEST_F(FileOperationsE2ETest, UnlinkFile) {
     GTEST_SKIP() << "Unlink API not yet implemented";
 }
 
+TEST_F(FileOperationsE2ETest, OpenReadWriteFile) {
+    // file-004: Open file with ReadWrite flag
+    // Step 1: Create a file
+    auto create_handle = engine->Open("/readwrite_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(create_handle, nullptr);
+
+    // Step 2: Write initial content
+    std::string initial_content = "Initial content for ReadWrite test!";
+    std::vector<uint8_t> initial_data(initial_content.begin(), initial_content.end());
+    engine->Write(create_handle, initial_data).get();
+    engine->Close(create_handle).get();
+
+    // Step 3: Open file with OpenFlags::ReadWrite
+    auto rw_handle = engine->Open("/readwrite_test.txt", OpenFlags::ReadWrite).get();
+    ASSERT_NE(rw_handle, nullptr);
+    ASSERT_EQ(rw_handle->GetPath(), "/readwrite_test.txt");
+
+    // Step 4: Seek to end and append new content
+    engine->Lseek(rw_handle, 0, Whence::End);
+
+    std::string new_content = " - Modified content!";
+    std::vector<uint8_t> write_data(new_content.begin(), new_content.end());
+    auto write_result = engine->Write(rw_handle, write_data).get();
+    ASSERT_EQ(write_result, static_cast<ssize_t>(write_data.size()))
+        << "Write on ReadWrite handle should succeed";
+
+    // Step 5: Seek back to beginning and read all content
+    engine->Lseek(rw_handle, 0, Whence::Set);
+
+    std::vector<uint8_t> read_buf(200);
+    auto read_result = engine->Read(rw_handle, read_buf, read_buf.size()).get();
+    ASSERT_GT(read_result, 0) << "Read on ReadWrite handle should succeed";
+
+    // Verify the content matches
+    std::string expected = initial_content + new_content;
+    std::string actual(read_buf.begin(), read_buf.begin() + read_result);
+    ASSERT_EQ(actual.substr(0, expected.size()), expected)
+        << "Read content should match written data";
+
+    engine->Close(rw_handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

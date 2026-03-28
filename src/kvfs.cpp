@@ -425,9 +425,9 @@ public:
             return promise.get_future();
         }
 
-        // Check if handle is write-only
+        // Check if handle is write-only (ReadWrite = 0x03, WriteOnly = 0x02)
         OpenFlags flags = impl->GetFlags();
-        bool write_only = (static_cast<int>(flags) & static_cast<int>(OpenFlags::WriteOnly)) != 0;
+        bool write_only = (static_cast<int>(flags) & 0x03) == static_cast<int>(OpenFlags::WriteOnly);
 
         if (write_only) {
             promise.set_exception(std::make_exception_ptr(
@@ -435,9 +435,68 @@ public:
             return promise.get_future();
         }
 
-        // TODO: Implement actual read logic
-        (void)buf; (void)count;
-        promise.set_value(0);
+        try {
+            uint64_t inode_oid = impl->GetInodeOid();
+            std::string inode_key = GetInodeKey(inode_oid);
+            auto [found, inode_data] = device_->Get(inode_key).get();
+
+            if (!found) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Inode not found: " + std::to_string(inode_oid))));
+                return promise.get_future();
+            }
+
+            Inode inode = Inode::Deserialize(inode_data);
+
+            // 计算实际可读取的数据量
+            size_t available = inode.size;
+            size_t offset = impl->GetOffset();
+
+            std::cout << "Read: offset=" << offset << ", size=" << available
+                      << ", inline_data_len=" << inode.inline_data_len
+                      << ", is_inline=" << inode.is_inline << std::endl;
+
+            if (offset >= available) {
+                // 已经到达文件末尾
+                std::cout << "Read: at end of file, returning 0" << std::endl;
+                promise.set_value(0);
+                return promise.get_future();
+            }
+
+            size_t bytes_to_read = std::min(count, available - offset);
+
+            // 读取数据
+            if (inode.is_inline) {
+                // 内联数据存储在 inode 后面
+                if (offset < inode.inline_data_len) {
+                    size_t copy_len = std::min(bytes_to_read, inode.inline_data_len - offset);
+                    const uint8_t* inline_data = inode_data.data() + sizeof(Inode);
+                    std::memcpy(buf.data(), inline_data + offset, copy_len);
+
+                    // 更新偏移量
+                    impl->SetOffset(offset + copy_len);
+
+                    // 更新访问时间
+                    auto now = std::chrono::system_clock::now().time_since_epoch().count();
+                    inode.atime = now;
+                    std::vector<uint8_t> updated_inode = inode.Serialize();
+                    updated_inode.insert(updated_inode.end(),
+                                         inode_data.begin() + sizeof(Inode),
+                                         inode_data.end());
+                    device_->Put(inode_key, updated_inode).get();
+
+                    promise.set_value(static_cast<ssize_t>(copy_len));
+                } else {
+                    promise.set_value(0);
+                }
+            } else {
+                // TODO: 非内联数据（chunk 模式）
+                promise.set_value(0);
+            }
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
         return promise.get_future();
     }
 
@@ -452,7 +511,8 @@ public:
         }
 
         OpenFlags flags = impl->GetFlags();
-        bool read_only = (static_cast<int>(flags) & static_cast<int>(OpenFlags::ReadOnly)) != 0;
+        // Check if handle is read-only (ReadWrite = 0x03, ReadOnly = 0x01)
+        bool read_only = (static_cast<int>(flags) & 0x03) == static_cast<int>(OpenFlags::ReadOnly);
 
         if (read_only) {
             promise.set_exception(std::make_exception_ptr(
@@ -460,14 +520,110 @@ public:
             return promise.get_future();
         }
 
-        // TODO: Implement actual write logic
-        promise.set_value(data.size());
+        try {
+            uint64_t inode_oid = impl->GetInodeOid();
+            std::string inode_key = GetInodeKey(inode_oid);
+            auto [found, inode_data] = device_->Get(inode_key).get();
+
+            if (!found) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Inode not found: " + std::to_string(inode_oid))));
+                return promise.get_future();
+            }
+
+            Inode inode = Inode::Deserialize(inode_data);
+
+            // 计算写入位置
+            size_t offset = impl->GetOffset();
+
+            // 检查是否需要扩展数据
+            size_t new_size = offset + data.size();
+
+            // 简单实现：内联存储所有数据（适用于小文件）
+            // 重新构建 inode + 数据
+            std::vector<uint8_t> new_inode_data = inode.Serialize();
+
+            // 获取现有数据（如果有）
+            std::vector<uint8_t> existing_data;
+            if (inode.is_inline && inode.inline_data_len > 0) {
+                existing_data.assign(inode_data.begin() + sizeof(Inode),
+                                     inode_data.begin() + sizeof(Inode) + inode.inline_data_len);
+            }
+
+            // 扩展或创建数据缓冲区
+            if (new_size > existing_data.size()) {
+                existing_data.resize(new_size);
+            }
+
+            // 复制新数据到指定位置
+            std::memcpy(existing_data.data() + offset, data.data(), data.size());
+
+            // 更新 inode 元数据
+            inode.size = new_size;
+            inode.inline_data_len = new_size;
+            inode.is_inline = true;
+
+            auto now = std::chrono::system_clock::now().time_since_epoch().count();
+            inode.mtime = now;
+            inode.ctime = now;
+
+            // 构建新的 inode 数据（inode 结构 + 内联数据）
+            std::vector<uint8_t> updated_inode_data = inode.Serialize();
+            updated_inode_data.insert(updated_inode_data.end(),
+                                      existing_data.begin(),
+                                      existing_data.end());
+
+            // 写入设备
+            device_->Put(inode_key, updated_inode_data).get();
+
+            // 更新偏移量
+            impl->SetOffset(offset + data.size());
+
+            promise.set_value(static_cast<ssize_t>(data.size()));
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
         return promise.get_future();
     }
 
     off_t Lseek(std::shared_ptr<FileHandle> handle, off_t offset, Whence whence) override {
-        (void)handle; (void)whence;
-        return offset;
+        auto impl = std::dynamic_pointer_cast<FileHandleImpl>(handle);
+        if (!impl) {
+            return -1;
+        }
+
+        off_t new_offset;
+        switch (whence) {
+            case Whence::Set:
+                new_offset = offset;
+                break;
+            case Whence::Cur:
+                new_offset = static_cast<off_t>(impl->GetOffset()) + offset;
+                break;
+            case Whence::End:
+                // 需要获取文件大小
+                {
+                    uint64_t inode_oid = impl->GetInodeOid();
+                    std::string inode_key = GetInodeKey(inode_oid);
+                    auto [found, inode_data] = device_->Get(inode_key).get();
+                    if (!found) {
+                        return -1;
+                    }
+                    Inode inode = Inode::Deserialize(inode_data);
+                    new_offset = static_cast<off_t>(inode.size) + offset;
+                }
+                break;
+            default:
+                return -1;
+        }
+
+        if (new_offset < 0) {
+            return -1;
+        }
+
+        impl->SetOffset(static_cast<uint64_t>(new_offset));
+        return new_offset;
     }
 
     std::future<int> Close(std::shared_ptr<FileHandle> handle) override {
