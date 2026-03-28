@@ -123,7 +123,7 @@
 ### Seek Operations Features (1 passing)
 | Feature | Commit |
 |---------|--------|
-| seek-001: Lseek with SEEK_SET moves to absolute offset | `TODO` |
+| seek-001: Lseek with SEEK_SET moves to absolute offset | `24328b1` |
 
 ### Pending Features (28 failing)
 - `seek-002` to `seek-004`: Seek operations (3 features)
@@ -166,12 +166,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| seek-001 | Lseek with SEEK_SET moves to absolute offset | `TODO` |
+| seek-001 | Lseek with SEEK_SET moves to absolute offset | `24328b1` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | test: Add E2E test for seek-001 Lseek SEEK_SET |
+| `24328b1` | test: Add E2E test for seek-001 Lseek SEEK_SET |
 
 ---
 
