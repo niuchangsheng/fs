@@ -118,7 +118,7 @@
 | io-004: Read returns actual bytes read | `71f6455` |
 | io-005: Write updates file size in inode | `cfbf3a5` |
 | io-006: Write with Append flag appends to end | `8671a51` |
-| io-007: Write with Truncate flag clears file first | `TODO` |
+| io-007: Write with Truncate flag clears file first | `abe17cc` |
 
 ### Pending Features (29 failing)
 - `seek-001` to `seek-004`: Seek operations (4 features)
@@ -162,12 +162,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| io-007 | Write with Truncate flag clears file first | `TODO` |
+| io-007 | Write with Truncate flag clears file first | `abe17cc` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | test: Add E2E test for io-007 Truncate flag |
+| `abe17cc` | test: Add E2E test for io-007 Truncate flag |
 
 ---
 
