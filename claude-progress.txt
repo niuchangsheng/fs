@@ -113,7 +113,7 @@
 | Feature | Commit |
 |---------|--------|
 | io-001: Write data to file at current offset | `482054f` |
-| io-002: Read data from file at current offset | `TODO` |
+| io-002: Read data from file at current offset | `61356bc` |
 
 ### Pending Features (34 failing)
 - `io-003` to `io-007`: IO operations (5 features)
@@ -158,12 +158,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| io-002 | Read data from file at current offset | `TODO` |
+| io-002 | Read data from file at current offset | `61356bc` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | test: Add E2E test for io-002 Read operation |
+| `61356bc` | test: Add E2E test for io-002 Read operation |
 
 ---
 
