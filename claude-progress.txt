@@ -20,21 +20,14 @@
   - `recovery`: 2 features (all failing)
   - `performance`: 2 features (all failing)
 
-### Next Session Should
-1. Pick ONE feature from `file_operations` category to implement
-2. Recommended starting point: `file-001` - "Open file with Create flag creates new file"
-3. Write a test case in `examples/harness_test.cpp` that demonstrates the feature
-4. Implement the minimum code to make the test pass
-5. Update `.features.json` to mark the feature as `"status": "passing", "tested": true`
-6. Commit with descriptive message
-
-### Rules for Coding Agents
-- Work on ONE feature at a time
-- Always write tests BEFORE implementation
-- Never remove or modify existing features in `.features.json`
-- Only change `status` and `tested` fields when a feature is complete
-- Commit after each feature is complete
-- Keep code clean and ready for merge to main
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| core-001 | KVEngine initialization with device binding | `903d4be` |
+| core-002 | Superblock creation and persistence | `903d4be` |
+| core-003 | Root inode creation on format | `903d4be` |
+| core-004 | Mount existing filesystem | `903d4be` |
+| core-005 | Graceful shutdown with resource cleanup | `903d4be` |
 
 ---
 
@@ -47,35 +40,88 @@
 - [x] Created `test/e2e/` directory for end-to-end tests
 - [x] Updated `CMakeLists.txt` with test targets
 
-#### Unit Tests (all passing)
-| Test File | Tests | Status |
-|-----------|-------|--------|
-| `test/unit/mock_kv_device_test.cpp` | Put/Get, Get non-existent, Delete, Exists, Persistence | 5/5 passing |
-| `test/unit/metadata_test.cpp` | Superblock key, Inode key, Superblock serialize, Inode serialize, FileType enum | 5/5 passing |
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| core-001 | KVEngine initialization (E2E verified) | `f9b31b6`, `02acd45` |
+| core-002 | Superblock (unit tested) | `f9b31b6` |
+| core-003 | Root inode (E2E verified) | `f9b31b6` |
+| core-004 | Mount existing (E2E verified) | `f9b31b6` |
+| core-005 | Shutdown cleanup (E2E verified) | `f9b31b6` |
 
-#### E2E Tests
-| Test File | Tests | Status |
-|-----------|-------|--------|
-| `test/e2e/initialization_test.cpp` | First init formats, Mount existing, Shutdown cleanup, Multiple engines isolated | 4/4 passing |
-| `test/e2e/file_operations_test.cpp` | Open create, Write/Read roundtrip, Unlink, Multiple files | 0/4 passing (SKIPPED - APIs not implemented) |
+### Test Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `9a4863d` | harness: Add long-running agent environment scaffolding |
+| `f9b31b6` | test: Add unit and E2E test infrastructure |
+| `02acd45` | test: Migrate all tests to Google Test framework |
+| `ec11fd8` | build: Add per-directory CMakeLists.txt files |
 
-### Build Targets
-```bash
-# Unit tests
-./mock_kv_device_test
-./metadata_test
+---
 
-# E2E tests
-./initialization_e2e_test
-./file_operations_e2e_test
-```
+## Session 3 - RocksDB Backend
+**Date:** 2026-03-28
+**Goal:** Add RocksDB as mock backend, update features schema
 
-### Next Session Should
+### Completed
+- [x] Implemented optional RocksDB backend for MockKVDevice
+- [x] Set RocksDB as default backend
+- [x] Fixed multi-instance lock conflicts with unique paths
+- [x] Updated `.features.json` with detailed test steps
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| core-001 | KVEngine init (RocksDB backend) | `72facdf` |
+| core-002 | Superblock (RocksDB persistence) | `72facdf` |
+| core-004 | Mount existing (RocksDB verified) | `72facdf` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `6e98d19` | feat: Add optional RocksDB backend for MockKVDevice |
+| `72facdf` | feat: Enable RocksDB backend by default |
+| `30f8979` | docs: Add detailed test steps to .features.json |
+
+---
+
+## Summary: Features by Commit
+
+### Core Features (5 passing)
+| Feature | Commit |
+|---------|--------|
+| core-001: KVEngine initialization | `903d4be`, `72facdf` |
+| core-002: Superblock creation | `903d4be`, `f9b31b6` |
+| core-003: Root inode creation | `903d4be` |
+| core-004: Mount existing | `903d4be`, `72facdf` |
+| core-005: Graceful shutdown | `903d4be` |
+
+### Pending Features (43 failing)
+- `file-001` to `file-008`: File operations (8 features)
+- `io-001` to `io-007`: IO operations (7 features)
+- `seek-001` to `seek-004`: Seek operations (4 features)
+- `meta-001` to `meta-006`: Metadata operations (6 features)
+- `sync-001` to `sync-002`: Durability (2 features)
+- `dir-001` to `dir-004`: Directory operations (4 features)
+- `path-001` to `path-004`: Path resolution (4 features)
+- `conv-001` to `conv-003`: Concurrency (3 features)
+- `rec-001` to `rec-002`: Recovery (2 features)
+- `perf-001` to `perf-002`: Performance (2 features)
+
+---
+
+## Rules for Coding Agents
+- Work on ONE feature at a time
+- Always write tests BEFORE implementation
+- Never remove or modify existing features in `.features.json`
+- Only change `status` and `tested` fields when a feature is complete
+- **When updating `.features.json`, add the commit ID to this file**
+- Commit after each feature is complete
+- Keep code clean and ready for merge to main
+
+## Next Session
 1. Implement `Open()` API in `src/kvfs.cpp`
 2. Start with `file-001`: Open file with Create flag creates new file
-3. Add test to `test/e2e/file_operations_test.cpp`
+3. Write E2E test in `test/e2e/file_operations_test.cpp`
 4. Update `.features.json` to mark `file-001` as passing
-
-### Git Status
-- New files: `test/unit/mock_kv_device_test.cpp`, `test/unit/metadata_test.cpp`, `test/e2e/initialization_test.cpp`, `test/e2e/file_operations_test.cpp`
-- Modified: `CMakeLists.txt`
+5. Update `claude-progress.txt` with the new commit ID
