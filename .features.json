@@ -6,6 +6,11 @@
       "id": "core-001",
       "category": "core",
       "description": "KVEngine initialization with device binding",
+      "steps": [
+        "Create KVEngine instance",
+        "Call Init() with device path",
+        "Verify device is bound successfully"
+      ],
       "status": "passing",
       "tested": true
     },
@@ -13,6 +18,12 @@
       "id": "core-002",
       "category": "core",
       "description": "Superblock creation and persistence",
+      "steps": [
+        "Initialize new filesystem",
+        "Verify superblock is created with magic number 0x4B564653",
+        "Verify version is set to 1",
+        "Verify superblock is persisted to KV device"
+      ],
       "status": "passing",
       "tested": true
     },
@@ -20,6 +31,12 @@
       "id": "core-003",
       "category": "core",
       "description": "Root inode creation on format",
+      "steps": [
+        "Initialize new filesystem",
+        "Verify root inode is created with OID 1",
+        "Verify root inode type is Directory",
+        "Verify superblock root_inode_oid points to root"
+      ],
       "status": "passing",
       "tested": true
     },
@@ -27,6 +44,13 @@
       "id": "core-004",
       "category": "core",
       "description": "Mount existing filesystem",
+      "steps": [
+        "Create and initialize filesystem",
+        "Shutdown engine",
+        "Create new engine instance",
+        "Call Init() with same device path",
+        "Verify filesystem is mounted (not reformatted)"
+      ],
       "status": "passing",
       "tested": true
     },
@@ -34,6 +58,11 @@
       "id": "core-005",
       "category": "core",
       "description": "Graceful shutdown with resource cleanup",
+      "steps": [
+        "Initialize engine",
+        "Call Shutdown()",
+        "Verify all resources are released"
+      ],
       "status": "passing",
       "tested": true
     },
@@ -41,6 +70,13 @@
       "id": "file-001",
       "category": "file_operations",
       "description": "Open file with Create flag creates new file",
+      "steps": [
+        "Initialize engine",
+        "Call Open() with path '/test.txt' and OpenFlags::Create",
+        "Verify FileHandle is returned (not null)",
+        "Verify handle->GetPath() returns '/test.txt'",
+        "Verify file is created in filesystem"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -48,6 +84,11 @@
       "id": "file-002",
       "category": "file_operations",
       "description": "Open file with ReadOnly flag",
+      "steps": [
+        "Create a file with some content",
+        "Call Open() with OpenFlags::ReadOnly",
+        "Verify write operations fail on this handle"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -55,6 +96,11 @@
       "id": "file-003",
       "category": "file_operations",
       "description": "Open file with WriteOnly flag",
+      "steps": [
+        "Create or open a file",
+        "Call Open() with OpenFlags::WriteOnly",
+        "Verify read operations fail on this handle"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -62,6 +108,11 @@
       "id": "file-004",
       "category": "file_operations",
       "description": "Open file with ReadWrite flag",
+      "steps": [
+        "Create a file",
+        "Call Open() with OpenFlags::ReadWrite",
+        "Verify both read and write operations succeed"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -69,6 +120,10 @@
       "id": "file-005",
       "category": "file_operations",
       "description": "Open returns FileHandle with valid path",
+      "steps": [
+        "Call Open() with a path",
+        "Verify handle->GetPath() returns the original path"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -76,6 +131,12 @@
       "id": "file-006",
       "category": "file_operations",
       "description": "Close releases file handle resources",
+      "steps": [
+        "Open a file",
+        "Call Close() with the handle",
+        "Verify handle is invalidated",
+        "Verify subsequent operations fail"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -83,6 +144,13 @@
       "id": "io-001",
       "category": "io_operations",
       "description": "Write data to file at current offset",
+      "steps": [
+        "Open file with WriteOnly or ReadWrite",
+        "Prepare data buffer",
+        "Call Write() with handle and data",
+        "Verify returned bytes written equals data size",
+        "Verify file offset is advanced"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -90,6 +158,14 @@
       "id": "io-002",
       "category": "io_operations",
       "description": "Read data from file at current offset",
+      "steps": [
+        "Open file with ReadOnly or ReadWrite",
+        "Prepare read buffer",
+        "Call Read() with handle and buffer",
+        "Verify returned bytes read",
+        "Verify buffer contains expected data",
+        "Verify file offset is advanced"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -97,6 +173,11 @@
       "id": "io-003",
       "category": "io_operations",
       "description": "Write returns actual bytes written",
+      "steps": [
+        "Open file for writing",
+        "Write 100 bytes",
+        "Verify Write() returns 100"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -104,6 +185,12 @@
       "id": "io-004",
       "category": "io_operations",
       "description": "Read returns actual bytes read",
+      "steps": [
+        "Create file with 100 bytes content",
+        "Open file for reading",
+        "Call Read() with 100 byte buffer",
+        "Verify Read() returns 100"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -111,6 +198,13 @@
       "id": "io-005",
       "category": "io_operations",
       "description": "Write updates file size in inode",
+      "steps": [
+        "Create empty file",
+        "Verify initial size is 0",
+        "Write 50 bytes",
+        "Call Stat() on file",
+        "Verify size is 50"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -118,6 +212,12 @@
       "id": "io-006",
       "category": "io_operations",
       "description": "Write with Append flag appends to end",
+      "steps": [
+        "Create file with existing content",
+        "Open with OpenFlags::Append",
+        "Write new data",
+        "Verify data is appended after original content"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -125,6 +225,13 @@
       "id": "io-007",
       "category": "io_operations",
       "description": "Write with Truncate flag clears file first",
+      "steps": [
+        "Create file with 100 bytes content",
+        "Open with OpenFlags::Truncate",
+        "Verify file size becomes 0",
+        "Write new data",
+        "Verify file contains only new data"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -132,6 +239,11 @@
       "id": "seek-001",
       "category": "seek_operations",
       "description": "Lseek with SEEK_SET moves to absolute offset",
+      "steps": [
+        "Open a file",
+        "Call Lseek(handle, 100, Whence::Set)",
+        "Verify returned offset is 100"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -139,6 +251,12 @@
       "id": "seek-002",
       "category": "seek_operations",
       "description": "Lseek with SEEK_CUR moves relative to current",
+      "steps": [
+        "Open a file",
+        "Write/read to move offset to 50",
+        "Call Lseek(handle, 10, Whence::Cur)",
+        "Verify returned offset is 60"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -146,6 +264,11 @@
       "id": "seek-003",
       "category": "seek_operations",
       "description": "Lseek with SEEK_END moves relative to end",
+      "steps": [
+        "Create file with 100 bytes",
+        "Call Lseek(handle, -10, Whence::End)",
+        "Verify returned offset is 90"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -153,6 +276,11 @@
       "id": "seek-004",
       "category": "seek_operations",
       "description": "Lseek returns new offset position",
+      "steps": [
+        "Open a file",
+        "Call Lseek with various offsets",
+        "Verify each call returns the new offset"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -160,6 +288,11 @@
       "id": "meta-001",
       "category": "metadata",
       "description": "Stat returns file size",
+      "steps": [
+        "Create file and write 100 bytes",
+        "Call Stat() on file path",
+        "Verify st_size is 100"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -167,6 +300,14 @@
       "id": "meta-002",
       "category": "metadata",
       "description": "Stat returns file type (regular/directory)",
+      "steps": [
+        "Create a regular file",
+        "Call Stat() on file",
+        "Verify S_ISREG() is true",
+        "Create a directory",
+        "Call Stat() on directory",
+        "Verify S_ISDIR() is true"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -174,6 +315,11 @@
       "id": "meta-003",
       "category": "metadata",
       "description": "Stat returns access/modify/change times",
+      "steps": [
+        "Create a file",
+        "Call Stat()",
+        "Verify st_atime, st_mtime, st_ctime are set"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -181,6 +327,11 @@
       "id": "meta-004",
       "category": "metadata",
       "description": "Stat returns uid and gid",
+      "steps": [
+        "Create a file",
+        "Call Stat()",
+        "Verify st_uid and st_gid are set"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -188,6 +339,14 @@
       "id": "meta-005",
       "category": "metadata",
       "description": "Write updates mtime (modification time)",
+      "steps": [
+        "Create a file",
+        "Record initial mtime",
+        "Sleep 1 second",
+        "Write new data",
+        "Call Stat()",
+        "Verify mtime is updated"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -195,6 +354,14 @@
       "id": "meta-006",
       "category": "metadata",
       "description": "Read updates atime (access time)",
+      "steps": [
+        "Create a file",
+        "Record initial atime",
+        "Sleep 1 second",
+        "Read data",
+        "Call Stat()",
+        "Verify atime is updated"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -202,6 +369,12 @@
       "id": "file-007",
       "category": "file_operations",
       "description": "Unlink deletes a file",
+      "steps": [
+        "Create a file",
+        "Call Unlink() on file path",
+        "Verify return value is 0",
+        "Verify file no longer exists"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -209,6 +382,10 @@
       "id": "file-008",
       "category": "file_operations",
       "description": "Unlink on non-existent file returns error",
+      "steps": [
+        "Call Unlink() on non-existent path",
+        "Verify return value is -1 or error"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -216,6 +393,12 @@
       "id": "sync-001",
       "category": "durability",
       "description": "Fsync flushes dirty data to KV device",
+      "steps": [
+        "Open file for writing",
+        "Write data",
+        "Call Fsync()",
+        "Verify data is persisted"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -223,6 +406,12 @@
       "id": "sync-002",
       "category": "durability",
       "description": "Fsync flushes metadata to KV device",
+      "steps": [
+        "Open file",
+        "Modify metadata (size, mtime)",
+        "Call Fsync()",
+        "Verify metadata is persisted"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -230,6 +419,11 @@
       "id": "dir-001",
       "category": "directory",
       "description": "Create directory with mkdir semantics",
+      "steps": [
+        "Call mkdir('/newdir')",
+        "Verify directory is created",
+        "Verify Stat() shows directory type"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -237,6 +431,11 @@
       "id": "dir-002",
       "category": "directory",
       "description": "List directory contents",
+      "steps": [
+        "Create directory with files",
+        "Call readdir() or equivalent",
+        "Verify all entries are listed"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -244,6 +443,11 @@
       "id": "dir-003",
       "category": "directory",
       "description": "Navigate nested directory paths",
+      "steps": [
+        "Create nested path '/a/b/c'",
+        "Open file at '/a/b/c/file.txt'",
+        "Verify path resolution works"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -251,6 +455,11 @@
       "id": "dir-004",
       "category": "directory",
       "description": "Remove empty directory",
+      "steps": [
+        "Create empty directory",
+        "Call rmdir()",
+        "Verify directory is deleted"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -258,6 +467,11 @@
       "id": "path-001",
       "category": "path_resolution",
       "description": "Resolve absolute path from root",
+      "steps": [
+        "Create file at '/test.txt'",
+        "Open with absolute path '/test.txt'",
+        "Verify file is found"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -265,6 +479,11 @@
       "id": "path-002",
       "category": "path_resolution",
       "description": "Resolve relative path from current",
+      "steps": [
+        "Set current directory",
+        "Open file with relative path 'test.txt'",
+        "Verify file is found"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -272,6 +491,11 @@
       "id": "path-003",
       "category": "path_resolution",
       "description": "Handle . and .. path components",
+      "steps": [
+        "Create file at '/a/b/test.txt'",
+        "Open with path '/a/b/../b/./test.txt'",
+        "Verify file is found"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -279,6 +503,11 @@
       "id": "path-004",
       "category": "path_resolution",
       "description": "Handle trailing slashes",
+      "steps": [
+        "Create directory '/mydir'",
+        "Stat '/mydir/' with trailing slash",
+        "Verify it resolves to directory"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -286,6 +515,12 @@
       "id": "conv-001",
       "category": "concurrency",
       "description": "Concurrent reads on same file",
+      "steps": [
+        "Create file with content",
+        "Spawn multiple threads",
+        "Each thread reads the file simultaneously",
+        "Verify all reads succeed"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -293,6 +528,11 @@
       "id": "conv-002",
       "category": "concurrency",
       "description": "Concurrent writes use CoW semantics",
+      "steps": [
+        "Open same file in multiple threads",
+        "Each thread writes different data",
+        "Verify no data corruption via CAS"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -300,6 +540,11 @@
       "id": "conv-003",
       "category": "concurrency",
       "description": "Atomic inode update via CAS",
+      "steps": [
+        "Modify inode metadata",
+        "Verify update uses atomic CAS operation",
+        "Verify concurrent modifications are serialized"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -307,6 +552,12 @@
       "id": "rec-001",
       "category": "recovery",
       "description": "Mount recovers from unclean shutdown",
+      "steps": [
+        "Create filesystem with data",
+        "Simulate crash (kill without shutdown)",
+        "Restart and mount",
+        "Verify filesystem is consistent"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -314,6 +565,12 @@
       "id": "rec-002",
       "category": "recovery",
       "description": "WAL replay on crash recovery",
+      "steps": [
+        "Enable WAL",
+        "Write data without fsync",
+        "Simulate crash",
+        "Restart and verify WAL replay recovers data"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -321,6 +578,11 @@
       "id": "perf-001",
       "category": "performance",
       "description": "Inline data for small files (<4KB)",
+      "steps": [
+        "Create file with <4KB data",
+        "Verify data is stored inline in inode",
+        "Verify no separate chunk KV is created"
+      ],
       "status": "failing",
       "tested": false
     },
@@ -328,6 +590,11 @@
       "id": "perf-002",
       "category": "performance",
       "description": "Chunk-based storage for large files",
+      "steps": [
+        "Create file with >4KB data",
+        "Verify data is split into chunks",
+        "Verify inode contains chunk map"
+      ],
       "status": "failing",
       "tested": false
     }
