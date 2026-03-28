@@ -29,10 +29,26 @@ add_library(kvfs_core SHARED
 target_include_directories(kvfs_core PUBLIC include)
 
 # -----------------------------------------------------------------------------
-# 可执行文件示例 / 单元测试 (可选)
+# 可执行文件示例 / 单元测试 / E2E 测试
 # -----------------------------------------------------------------------------
+
+# 基础示例
 add_executable(kvfs_example examples/main.cpp)
 target_link_libraries(kvfs_example PRIVATE kvfs_core)
+
+# 单元测试
+add_executable(mock_kv_device_test test/unit/mock_kv_device_test.cpp)
+target_link_libraries(mock_kv_device_test PRIVATE kvfs_core)
+
+add_executable(metadata_test test/unit/metadata_test.cpp)
+target_link_libraries(metadata_test PRIVATE kvfs_core)
+
+# E2E 测试
+add_executable(initialization_e2e_test test/e2e/initialization_test.cpp)
+target_link_libraries(initialization_e2e_test PRIVATE kvfs_core)
+
+add_executable(file_operations_e2e_test test/e2e/file_operations_test.cpp)
+target_link_libraries(file_operations_e2e_test PRIVATE kvfs_core)
 
 # -----------------------------------------------------------------------------
 # 安装规则 (可选)

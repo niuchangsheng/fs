@@ -35,3 +35,47 @@
 - Only change `status` and `tested` fields when a feature is complete
 - Commit after each feature is complete
 - Keep code clean and ready for merge to main
+
+---
+
+## Session 2 - Test Infrastructure
+**Date:** 2026-03-28
+**Goal:** Set up test infrastructure with unit tests and E2E tests
+
+### Completed
+- [x] Created `test/unit/` directory for unit tests
+- [x] Created `test/e2e/` directory for end-to-end tests
+- [x] Updated `CMakeLists.txt` with test targets
+
+#### Unit Tests (all passing)
+| Test File | Tests | Status |
+|-----------|-------|--------|
+| `test/unit/mock_kv_device_test.cpp` | Put/Get, Get non-existent, Delete, Exists, Persistence | 5/5 passing |
+| `test/unit/metadata_test.cpp` | Superblock key, Inode key, Superblock serialize, Inode serialize, FileType enum | 5/5 passing |
+
+#### E2E Tests
+| Test File | Tests | Status |
+|-----------|-------|--------|
+| `test/e2e/initialization_test.cpp` | First init formats, Mount existing, Shutdown cleanup, Multiple engines isolated | 4/4 passing |
+| `test/e2e/file_operations_test.cpp` | Open create, Write/Read roundtrip, Unlink, Multiple files | 0/4 passing (SKIPPED - APIs not implemented) |
+
+### Build Targets
+```bash
+# Unit tests
+./mock_kv_device_test
+./metadata_test
+
+# E2E tests
+./initialization_e2e_test
+./file_operations_e2e_test
+```
+
+### Next Session Should
+1. Implement `Open()` API in `src/kvfs.cpp`
+2. Start with `file-001`: Open file with Create flag creates new file
+3. Add test to `test/e2e/file_operations_test.cpp`
+4. Update `.features.json` to mark `file-001` as passing
+
+### Git Status
+- New files: `test/unit/mock_kv_device_test.cpp`, `test/unit/metadata_test.cpp`, `test/e2e/initialization_test.cpp`, `test/e2e/file_operations_test.cpp`
+- Modified: `CMakeLists.txt`
