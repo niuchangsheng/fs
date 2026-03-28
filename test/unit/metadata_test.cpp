@@ -1,47 +1,34 @@
 /**
  * @file metadata_test.cpp
- * @brief 单元测试：Metadata 结构 (Superblock, Inode)
- *
- * 测试元数据结构的序列化和反序列化
+ * @brief 单元测试：Metadata 结构
  */
 
 #include "metadata.h"
-#include <iostream>
-#include <cassert>
+#include <gtest/gtest.h>
 #include <cstring>
 
 using namespace kvfs;
 
-void test_superblock_key_generation() {
-    std::cout << "[TEST] Superblock key generation" << std::endl;
-
+TEST(MetadataTest, SuperblockKeyGeneration) {
     std::string key = GetSuperblockKey();
-    assert(key.size() == 16);
-    assert(key[0] == 'S');
-
-    std::cout << "  PASSED" << std::endl;
+    ASSERT_EQ(key.size(), 16);
+    ASSERT_EQ(key[0], 'S');
 }
 
-void test_inode_key_generation() {
-    std::cout << "[TEST] Inode key generation" << std::endl;
-
+TEST(MetadataTest, InodeKeyGeneration) {
     std::string key1 = GetInodeKey(1);
     std::string key2 = GetInodeKey(2);
 
-    assert(key1.size() == 16);
-    assert(key2.size() == 16);
-    assert(key1[0] == 'I');
-    assert(key2[0] == 'I');
-    assert(key1 != key2);
-
-    std::cout << "  PASSED" << std::endl;
+    ASSERT_EQ(key1.size(), 16);
+    ASSERT_EQ(key2.size(), 16);
+    ASSERT_EQ(key1[0], 'I');
+    ASSERT_EQ(key2[0], 'I');
+    ASSERT_NE(key1, key2);
 }
 
-void test_superblock_serialize_deserialize() {
-    std::cout << "[TEST] Superblock serialize/deserialize" << std::endl;
-
+TEST(MetadataTest, SuperblockSerializeDeserialize) {
     Superblock original{};
-    original.magic = 0x4B564653;  // "KVFS"
+    original.magic = 0x4B564653;
     original.version = 1;
     original.block_size = 4096;
     original.total_capacity = 1024 * 1024 * 1024;
@@ -49,27 +36,21 @@ void test_superblock_serialize_deserialize() {
     original.next_inode_oid = 2;
     original.next_chunk_oid = 100;
 
-    // Serialize
     auto data = original.Serialize();
-    assert(data.size() == sizeof(Superblock));
+    ASSERT_EQ(data.size(), sizeof(Superblock));
 
-    // Deserialize
     Superblock restored = Superblock::Deserialize(data);
 
-    assert(restored.magic == original.magic);
-    assert(restored.version == original.version);
-    assert(restored.block_size == original.block_size);
-    assert(restored.total_capacity == original.total_capacity);
-    assert(restored.root_inode_oid == original.root_inode_oid);
-    assert(restored.next_inode_oid == original.next_inode_oid);
-    assert(restored.next_chunk_oid == original.next_chunk_oid);
-
-    std::cout << "  PASSED" << std::endl;
+    ASSERT_EQ(restored.magic, original.magic);
+    ASSERT_EQ(restored.version, original.version);
+    ASSERT_EQ(restored.block_size, original.block_size);
+    ASSERT_EQ(restored.total_capacity, original.total_capacity);
+    ASSERT_EQ(restored.root_inode_oid, original.root_inode_oid);
+    ASSERT_EQ(restored.next_inode_oid, original.next_inode_oid);
+    ASSERT_EQ(restored.next_chunk_oid, original.next_chunk_oid);
 }
 
-void test_inode_serialize_deserialize() {
-    std::cout << "[TEST] Inode serialize/deserialize" << std::endl;
-
+TEST(MetadataTest, InodeSerializeDeserialize) {
     Inode original{};
     original.oid = 42;
     original.type = FileType::RegularFile;
@@ -84,45 +65,22 @@ void test_inode_serialize_deserialize() {
     original.is_inline = true;
     original.inline_data_len = 100;
 
-    // Serialize
     auto data = original.Serialize();
-    assert(data.size() == sizeof(Inode));
+    ASSERT_EQ(data.size(), sizeof(Inode));
 
-    // Deserialize
     Inode restored = Inode::Deserialize(data);
 
-    assert(restored.oid == original.oid);
-    assert(restored.type == original.type);
-    assert(restored.mode == original.mode);
-    assert(restored.uid == original.uid);
-    assert(restored.gid == original.gid);
-    assert(restored.size == original.size);
-    assert(restored.is_inline == original.is_inline);
-
-    std::cout << "  PASSED" << std::endl;
+    ASSERT_EQ(restored.oid, original.oid);
+    ASSERT_EQ(restored.type, original.type);
+    ASSERT_EQ(restored.mode, original.mode);
+    ASSERT_EQ(restored.uid, original.uid);
+    ASSERT_EQ(restored.gid, original.gid);
+    ASSERT_EQ(restored.size, original.size);
+    ASSERT_EQ(restored.is_inline, original.is_inline);
 }
 
-void test_file_type_enum() {
-    std::cout << "[TEST] FileType enum values" << std::endl;
-
-    assert(static_cast<uint8_t>(FileType::RegularFile) == 1);
-    assert(static_cast<uint8_t>(FileType::Directory) == 2);
-    assert(static_cast<uint8_t>(FileType::Symlink) == 3);
-
-    std::cout << "  PASSED" << std::endl;
-}
-
-int main() {
-    std::cout << "=== Metadata Unit Tests ===" << std::endl;
-    std::cout << std::endl;
-
-    test_superblock_key_generation();
-    test_inode_key_generation();
-    test_superblock_serialize_deserialize();
-    test_inode_serialize_deserialize();
-    test_file_type_enum();
-
-    std::cout << std::endl;
-    std::cout << "=== All Unit Tests Passed ===" << std::endl;
-    return 0;
+TEST(MetadataTest, FileTypeEnumValues) {
+    ASSERT_EQ(static_cast<uint8_t>(FileType::RegularFile), 1);
+    ASSERT_EQ(static_cast<uint8_t>(FileType::Directory), 2);
+    ASSERT_EQ(static_cast<uint8_t>(FileType::Symlink), 3);
 }
