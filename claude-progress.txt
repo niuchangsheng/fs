@@ -97,7 +97,7 @@
 | core-004: Mount existing | `903d4be`, `72facdf` |
 | core-005: Graceful shutdown | `903d4be` |
 
-### File Operations Features (6 passing)
+### File Operations Features (8 passing)
 | Feature | Commit |
 |---------|--------|
 | file-001: Open with Create flag | `e9db5c3` |
@@ -107,9 +107,9 @@
 | file-005: Open returns FileHandle with valid path | `add6158` |
 | file-006: Close releases file handle resources | `31e6695` |
 | file-007: Unlink deletes a file | `c1187ed` |
+| file-008: Unlink on non-existent file returns error | `TODO` |
 
-### Pending Features (37 failing)
-- `file-008`: Unlink on non-existent file (1 feature)
+### Pending Features (36 failing)
 - `io-001` to `io-007`: IO operations (7 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
@@ -132,9 +132,30 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `file-008`: Unlink on non-existent file returns error
-2. Write E2E test for Unlink error handling
-3. Update `.features.json` to mark `file-008` as passing
+1. Implement `io-001`: Write data to file at current offset
+2. Write E2E test for Write operation verification
+3. Update `.features.json` to mark io-001 as passing
+
+---
+
+## Session 9 - File Operations (Unlink Error)
+**Date:** 2026-03-28
+**Goal:** Implement file-008: Unlink on non-existent file returns error
+
+### Completed
+- [x] Added E2E test for Unlink non-existent file error handling
+- [x] Verified Unlink() already returns error for non-existent files (from file-007 implementation)
+- [x] Updated `.features.json` to mark file-008 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| file-008 | Unlink on non-existent file returns error | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | test: Add E2E test for file-008 Unlink error handling |
 
 ---
 

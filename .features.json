@@ -386,8 +386,8 @@
         "Call Unlink() on non-existent path",
         "Verify return value is -1 or error"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "sync-001",

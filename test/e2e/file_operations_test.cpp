@@ -235,6 +235,21 @@ TEST_F(FileOperationsE2ETest, CloseFileHandle) {
     ASSERT_TRUE(read_failed) << "Read on closed handle should fail";
 }
 
+TEST_F(FileOperationsE2ETest, UnlinkNonExistentFile) {
+    // file-008: Unlink on non-existent file returns error
+    // Step 1: Call Unlink() on non-existent path
+    bool unlink_failed = false;
+    try {
+        auto result = engine->Unlink("/non_existent_file.txt").get();
+        // If unlink succeeds, that's unexpected
+        FAIL() << "Unlink on non-existent file should fail";
+    } catch (const std::exception& e) {
+        unlink_failed = true;
+        std::cout << "Expected unlink failure: " << e.what() << std::endl;
+    }
+    ASSERT_TRUE(unlink_failed) << "Unlink on non-existent file should return error";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
