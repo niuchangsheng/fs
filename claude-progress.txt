@@ -97,16 +97,18 @@
 | core-004: Mount existing | `903d4be`, `72facdf` |
 | core-005: Graceful shutdown | `903d4be` |
 
-### File Operations Features (4 passing)
+### File Operations Features (5 passing)
 | Feature | Commit |
 |---------|--------|
 | file-001: Open with Create flag | `e9db5c3` |
 | file-002: Open with ReadOnly flag | `b942218` |
 | file-003: Open with WriteOnly flag | `3cb7789` |
-| file-004: Open with ReadWrite flag | `TODO` |
+| file-004: Open with ReadWrite flag | `add6158` |
+| file-005: Open returns FileHandle with valid path | `add6158` |
+| file-006: Close releases file handle resources | `TODO` |
 
-### Pending Features (39 failing)
-- `file-003` to `file-008`: File operations (6 features)
+### Pending Features (38 failing)
+- `file-007` to `file-008`: File operations (2 features)
 - `io-001` to `io-007`: IO operations (7 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
@@ -129,9 +131,55 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `file-004`: Open file with ReadWrite flag
-2. Write E2E test for ReadWrite flag verification (both read and write succeed)
-3. Update `.features.json` to mark `file-004` as passing
+1. Implement `file-007`: Unlink deletes a file
+2. Write E2E test for Unlink verification
+3. Update `.features.json` to mark `file-007` as passing
+
+---
+
+## Session 7 - File Operations (Close)
+**Date:** 2026-03-28
+**Goal:** Implement file-006: Close releases file handle resources
+
+### Completed
+- [x] Added E2E test for Close file handle verification
+- [x] Implemented Close() to mark handle as closed
+- [x] Added IsClosed() check to Read/Write/Lseek operations
+- [x] Updated `.features.json` to mark file-006 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| file-006 | Close releases file handle resources, subsequent operations fail | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | feat: Implement file-006 Close releases file handle resources |
+
+---
+
+## Session 6 - File Operations (ReadWrite)
+**Date:** 2026-03-28
+**Goal:** Implement file-004: Open file with ReadWrite flag
+
+### Completed
+- [x] Added E2E test for ReadWrite flag verification
+- [x] Implemented Read() with inline data support
+- [x] Implemented Write() with inline data storage
+- [x] Implemented Lseek() with SEEK_SET, SEEK_CUR, SEEK_END support
+- [x] Fixed flag checking logic for ReadOnly/WriteOnly/ReadWrite modes
+- [x] Updated `.features.json` to mark file-004 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| file-004 | Open with ReadWrite flag, read and write succeed | `add6158` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `add6158` | feat: Implement file-004 ReadWrite flag and Read/Write/Lseek operations |
 
 ---
 

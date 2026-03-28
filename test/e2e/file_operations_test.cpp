@@ -151,6 +151,59 @@ TEST_F(FileOperationsE2ETest, OpenReadWriteFile) {
     engine->Close(rw_handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, OpenReturnsValidPath) {
+    // file-005: Open returns FileHandle with valid path
+    // Step 1: Call Open() with a path
+    auto handle = engine->Open("/path_test.txt", OpenFlags::Create).get();
+
+    // Step 2: Verify handle->GetPath() returns the original path
+    ASSERT_NE(handle, nullptr) << "Open should return a valid handle";
+    ASSERT_EQ(handle->GetPath(), "/path_test.txt") << "GetPath() should return the original path";
+
+    // Step 3: Verify with different file paths
+    auto handle2 = engine->Open("/another_file.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle2, nullptr) << "Open should return a valid handle";
+    ASSERT_EQ(handle2->GetPath(), "/another_file.txt")
+        << "GetPath() should return the original path";
+
+    engine->Close(handle).get();
+    engine->Close(handle2).get();
+}
+
+TEST_F(FileOperationsE2ETest, CloseFileHandle) {
+    // file-006: Close releases file handle resources
+    // Step 1: Open a file
+    auto handle = engine->Open("/close_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr) << "Open should return a valid handle";
+
+    // Step 2: Call Close() with the handle
+    auto close_result = engine->Close(handle).get();
+    ASSERT_EQ(close_result, 0) << "Close should return 0 on success";
+
+    // Step 3: Verify handle is invalidated (subsequent operations fail)
+    // Try to write to the closed handle
+    std::vector<uint8_t> write_data = {1, 2, 3, 4, 5};
+    bool write_failed = false;
+    try {
+        engine->Write(handle, write_data).get();
+    } catch (const std::exception& e) {
+        write_failed = true;
+        std::cout << "Expected write failure after close: " << e.what() << std::endl;
+    }
+    ASSERT_TRUE(write_failed) << "Write on closed handle should fail";
+
+    // Step 4: Verify read also fails on closed handle
+    std::vector<uint8_t> read_buf(100);
+    bool read_failed = false;
+    try {
+        engine->Read(handle, read_buf, read_buf.size()).get();
+    } catch (const std::exception& e) {
+        read_failed = true;
+        std::cout << "Expected read failure after close: " << e.what() << std::endl;
+    }
+    ASSERT_TRUE(read_failed) << "Read on closed handle should fail";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

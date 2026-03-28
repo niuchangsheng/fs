@@ -24,19 +24,22 @@ inline OpenFlags operator&(OpenFlags a, OpenFlags b) {
 class FileHandleImpl : public FileHandle {
 public:
     FileHandleImpl(std::string path, uint64_t inode_oid, OpenFlags flags)
-        : path_(std::move(path)), inode_oid_(inode_oid), flags_(flags), offset_(0) {}
+        : path_(std::move(path)), inode_oid_(inode_oid), flags_(flags), offset_(0), closed_(false) {}
 
     const std::string& GetPath() const override { return path_; }
     uint64_t GetOffset() const override { return offset_; }
     uint64_t GetInodeOid() const { return inode_oid_; }
     OpenFlags GetFlags() const { return flags_; }
+    bool IsClosed() const override { return closed_; }
     void SetOffset(uint64_t offset) { offset_ = offset; }
+    void SetClosed(bool closed) { closed_ = closed; }
 
 private:
     std::string path_;
     uint64_t inode_oid_;
     OpenFlags flags_;
     uint64_t offset_;
+    bool closed_;
 };
 
 /**
@@ -425,6 +428,13 @@ public:
             return promise.get_future();
         }
 
+        // Check if handle is closed
+        if (impl->IsClosed()) {
+            promise.set_exception(std::make_exception_ptr(
+                std::runtime_error("Cannot read from closed file handle")));
+            return promise.get_future();
+        }
+
         // Check if handle is write-only (ReadWrite = 0x03, WriteOnly = 0x02)
         OpenFlags flags = impl->GetFlags();
         bool write_only = (static_cast<int>(flags) & 0x03) == static_cast<int>(OpenFlags::WriteOnly);
@@ -507,6 +517,13 @@ public:
         auto impl = std::dynamic_pointer_cast<FileHandleImpl>(handle);
         if (!impl) {
             promise.set_exception(std::make_exception_ptr(std::runtime_error("Invalid handle type")));
+            return promise.get_future();
+        }
+
+        // Check if handle is closed
+        if (impl->IsClosed()) {
+            promise.set_exception(std::make_exception_ptr(
+                std::runtime_error("Cannot write to closed file handle")));
             return promise.get_future();
         }
 
@@ -593,6 +610,11 @@ public:
             return -1;
         }
 
+        // Check if handle is closed
+        if (impl->IsClosed()) {
+            return -1;
+        }
+
         off_t new_offset;
         switch (whence) {
             case Whence::Set:
@@ -627,8 +649,26 @@ public:
     }
 
     std::future<int> Close(std::shared_ptr<FileHandle> handle) override {
-        (void)handle;
         std::promise<int> promise;
+
+        auto impl = std::dynamic_pointer_cast<FileHandleImpl>(handle);
+        if (!impl) {
+            promise.set_exception(std::make_exception_ptr(
+                std::runtime_error("Invalid handle type")));
+            return promise.get_future();
+        }
+
+        // Check if already closed
+        if (impl->IsClosed()) {
+            promise.set_exception(std::make_exception_ptr(
+                std::runtime_error("File handle already closed")));
+            return promise.get_future();
+        }
+
+        // Mark handle as closed
+        impl->SetClosed(true);
+
+        std::cout << "Closed file: " << impl->GetPath() << std::endl;
         promise.set_value(0);
         return promise.get_future();
     }

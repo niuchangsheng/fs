@@ -124,8 +124,8 @@
         "Call Open() with a path",
         "Verify handle->GetPath() returns the original path"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "file-006",
@@ -137,8 +137,8 @@
         "Verify handle is invalidated",
         "Verify subsequent operations fail"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "io-001",
