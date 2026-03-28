@@ -275,6 +275,44 @@ TEST_F(FileOperationsE2ETest, WriteDataToFile) {
     engine->Close(handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, ReadDataFromFile) {
+    // io-002: Read data from file at current offset
+    // Step 1: Create a file with known content
+    auto write_handle = engine->Open("/io_read_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(write_handle, nullptr);
+
+    std::string expected_content = "Hello, Read Test!";
+    std::vector<uint8_t> write_data(expected_content.begin(), expected_content.end());
+    engine->Write(write_handle, write_data).get();
+    engine->Close(write_handle).get();
+
+    // Step 2: Open file with ReadOnly
+    auto read_handle = engine->Open("/io_read_test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(read_handle, nullptr);
+
+    // Step 3: Prepare read buffer
+    std::vector<uint8_t> read_buf(200);
+
+    // Step 4: Call Read() with handle and buffer
+    auto bytes_read = engine->Read(read_handle, read_buf, read_buf.size()).get();
+
+    // Step 5: Verify returned bytes read
+    ASSERT_EQ(bytes_read, static_cast<ssize_t>(expected_content.size()))
+        << "Read should return the number of bytes read";
+
+    // Step 6: Verify buffer contains expected data
+    std::string actual_content(read_buf.begin(), read_buf.begin() + bytes_read);
+    ASSERT_EQ(actual_content, expected_content)
+        << "Read content should match written data";
+
+    // Step 7: Verify file offset is advanced
+    uint64_t new_offset = read_handle->GetOffset();
+    ASSERT_EQ(new_offset, static_cast<uint64_t>(bytes_read))
+        << "File offset should be advanced by the number of bytes read";
+
+    engine->Close(read_handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
