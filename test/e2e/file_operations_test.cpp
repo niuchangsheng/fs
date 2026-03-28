@@ -427,6 +427,51 @@ TEST_F(FileOperationsE2ETest, WriteWithAppendFlag) {
     engine->Close(read_handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, WriteWithTruncateFlag) {
+    // io-007: Write with Truncate flag clears file first
+    // Step 1: Create file with 100 bytes content
+    auto write_handle = engine->Open("/io_truncate_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(write_handle, nullptr);
+
+    std::string initial_content(100, 'A');  // 100 bytes of 'A'
+    std::vector<uint8_t> initial_data(initial_content.begin(), initial_content.end());
+    engine->Write(write_handle, initial_data).get();
+    engine->Close(write_handle).get();
+
+    // Verify initial file size is 100
+    auto stat_before = engine->Stat("/io_truncate_test.txt").get();
+    ASSERT_EQ(stat_before.st_size, 100) << "Initial file size should be 100";
+
+    // Step 2: Open with OpenFlags::Truncate
+    auto truncate_handle = engine->Open("/io_truncate_test.txt", OpenFlags::ReadWrite | OpenFlags::Truncate).get();
+    ASSERT_NE(truncate_handle, nullptr);
+
+    // Step 3: Verify file size becomes 0
+    auto stat_after_truncate = engine->Stat("/io_truncate_test.txt").get();
+    ASSERT_EQ(stat_after_truncate.st_size, 0) << "File size should be 0 after truncate";
+
+    // Step 4: Write new data
+    std::string new_content = "New content!";
+    std::vector<uint8_t> new_data(new_content.begin(), new_content.end());
+    engine->Write(truncate_handle, new_data).get();
+    engine->Close(truncate_handle).get();
+
+    // Step 5: Verify file contains only new data
+    auto stat_final = engine->Stat("/io_truncate_test.txt").get();
+    ASSERT_EQ(stat_final.st_size, static_cast<ssize_t>(new_content.size()))
+        << "File size should equal new content size";
+
+    auto read_handle = engine->Open("/io_truncate_test.txt", OpenFlags::ReadOnly).get();
+    std::vector<uint8_t> read_buf(new_content.size());
+    auto bytes_read = engine->Read(read_handle, read_buf, read_buf.size()).get();
+    ASSERT_EQ(bytes_read, static_cast<ssize_t>(new_content.size()));
+
+    std::string actual(read_buf.begin(), read_buf.end());
+    ASSERT_EQ(actual, new_content) << "File should contain only new data after truncate";
+
+    engine->Close(read_handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

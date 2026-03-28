@@ -232,8 +232,8 @@
         "Write new data",
         "Verify file contains only new data"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "seek-001",

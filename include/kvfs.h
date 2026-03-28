@@ -22,6 +22,15 @@ enum class OpenFlags : int {
     Append = 0x40
 };
 
+// Bitwise operators for OpenFlags
+inline OpenFlags operator|(OpenFlags a, OpenFlags b) {
+    return static_cast<OpenFlags>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+inline OpenFlags operator&(OpenFlags a, OpenFlags b) {
+    return static_cast<OpenFlags>(static_cast<int>(a) & static_cast<int>(b));
+}
+
 /**
  * @brief Lseek 控制字
  */

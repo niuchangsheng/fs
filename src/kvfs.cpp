@@ -10,15 +10,6 @@
 
 namespace kvfs {
 
-// OpenFlags 位运算支持
-inline OpenFlags operator|(OpenFlags a, OpenFlags b) {
-    return static_cast<OpenFlags>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-inline OpenFlags operator&(OpenFlags a, OpenFlags b) {
-    return static_cast<OpenFlags>(static_cast<int>(a) & static_cast<int>(b));
-}
-
 /**
  * @brief 内部 FileHandle 实现类
  */
