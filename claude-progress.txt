@@ -109,14 +109,15 @@
 | file-007: Unlink deletes a file | `c1187ed` |
 | file-008: Unlink on non-existent file returns error | `1ae908f` |
 
-### IO Operations Features (2 passing)
+### IO Operations Features (3 passing)
 | Feature | Commit |
 |---------|--------|
 | io-001: Write data to file at current offset | `482054f` |
 | io-002: Read data from file at current offset | `61356bc` |
+| io-003: Write returns actual bytes written | `TODO` |
 
-### Pending Features (34 failing)
-- `io-003` to `io-007`: IO operations (5 features)
+### Pending Features (33 failing)
+- `io-004` to `io-007`: IO operations (4 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
 - `sync-001` to `sync-002`: Durability (2 features)
@@ -138,9 +139,30 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `io-003`: Write returns actual bytes written
-2. Write E2E test for Write return value verification
-3. Update `.features.json` to mark io-003 as passing
+1. Implement `io-004`: Read returns actual bytes read
+2. Write E2E test for Read return value verification
+3. Update `.features.json` to mark io-004 as passing
+
+---
+
+## Session 12 - IO Operations (Write Return Value)
+**Date:** 2026-03-28
+**Goal:** Implement io-003: Write returns actual bytes written
+
+### Completed
+- [x] Added E2E test for Write return value verification
+- [x] Verified Write() returns correct bytes written (100 bytes)
+- [x] Updated `.features.json` to mark io-003 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| io-003 | Write returns actual bytes written | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | test: Add E2E test for io-003 Write return value |
 
 ---
 

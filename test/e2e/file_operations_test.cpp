@@ -313,6 +313,25 @@ TEST_F(FileOperationsE2ETest, ReadDataFromFile) {
     engine->Close(read_handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, WriteReturnsActualBytesWritten) {
+    // io-003: Write returns actual bytes written
+    // Step 1: Open file for writing
+    auto handle = engine->Open("/io_write_bytes_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+
+    // Step 2: Write 100 bytes
+    std::vector<uint8_t> data(100);
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = static_cast<uint8_t>(i % 256);
+    }
+
+    // Step 3: Verify Write() returns 100
+    auto bytes_written = engine->Write(handle, data).get();
+    ASSERT_EQ(bytes_written, 100) << "Write should return 100 bytes written";
+
+    engine->Close(handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

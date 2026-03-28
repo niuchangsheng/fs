@@ -178,8 +178,8 @@
         "Write 100 bytes",
         "Verify Write() returns 100"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "io-004",
