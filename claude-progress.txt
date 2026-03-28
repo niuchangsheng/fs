@@ -116,7 +116,7 @@
 | io-002: Read data from file at current offset | `61356bc` |
 | io-003: Write returns actual bytes written | `0c10efc` |
 | io-004: Read returns actual bytes read | `71f6455` |
-| io-005: Write updates file size in inode | `TODO` |
+| io-005: Write updates file size in inode | `cfbf3a5` |
 
 ### Pending Features (31 failing)
 - `io-006` to `io-007`: IO operations (2 features)
@@ -160,12 +160,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| io-005 | Write updates file size in inode | `TODO` |
+| io-005 | Write updates file size in inode | `cfbf3a5` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | feat: Implement Stat() for io-005 file size verification |
+| `cfbf3a5` | feat: Implement Stat() for io-005 file size verification |
 
 ---
 
