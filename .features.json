@@ -375,8 +375,8 @@
         "Verify return value is 0",
         "Verify file no longer exists"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "file-008",

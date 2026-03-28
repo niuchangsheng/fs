@@ -105,8 +105,39 @@ TEST_F(FileOperationsE2ETest, OpenWriteOnlyFile) {
 }
 
 TEST_F(FileOperationsE2ETest, UnlinkFile) {
-    // TODO: Implement Open/Unlink APIs
-    GTEST_SKIP() << "Unlink API not yet implemented";
+    // file-007: Unlink deletes a file
+    // Step 1: Create a file
+    auto handle = engine->Open("/unlink_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr) << "Open should return a valid handle";
+
+    // Write some content
+    std::string content = "Content to be deleted!";
+    std::vector<uint8_t> data(content.begin(), content.end());
+    engine->Write(handle, data).get();
+    engine->Close(handle).get();
+
+    // Step 2: Verify file exists by opening it
+    auto verify_handle = engine->Open("/unlink_test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(verify_handle, nullptr) << "File should exist before unlink";
+    engine->Close(verify_handle).get();
+
+    // Step 3: Call Unlink() on file path
+    auto unlink_result = engine->Unlink("/unlink_test.txt").get();
+    ASSERT_EQ(unlink_result, 0) << "Unlink should return 0 on success";
+
+    // Step 4: Verify file no longer exists
+    bool open_failed = false;
+    try {
+        auto reopened = engine->Open("/unlink_test.txt", OpenFlags::ReadOnly).get();
+        // If open succeeds, file wasn't deleted
+        if (reopened) {
+            FAIL() << "File should not exist after unlink";
+        }
+    } catch (const std::exception& e) {
+        open_failed = true;
+        std::cout << "Expected open failure after unlink: " << e.what() << std::endl;
+    }
+    ASSERT_TRUE(open_failed) << "Opening unlinked file should fail";
 }
 
 TEST_F(FileOperationsE2ETest, OpenReadWriteFile) {

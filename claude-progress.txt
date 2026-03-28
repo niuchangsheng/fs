@@ -97,7 +97,7 @@
 | core-004: Mount existing | `903d4be`, `72facdf` |
 | core-005: Graceful shutdown | `903d4be` |
 
-### File Operations Features (5 passing)
+### File Operations Features (6 passing)
 | Feature | Commit |
 |---------|--------|
 | file-001: Open with Create flag | `e9db5c3` |
@@ -106,9 +106,10 @@
 | file-004: Open with ReadWrite flag | `add6158` |
 | file-005: Open returns FileHandle with valid path | `add6158` |
 | file-006: Close releases file handle resources | `31e6695` |
+| file-007: Unlink deletes a file | `TODO` |
 
-### Pending Features (38 failing)
-- `file-007` to `file-008`: File operations (2 features)
+### Pending Features (37 failing)
+- `file-008`: Unlink on non-existent file (1 feature)
 - `io-001` to `io-007`: IO operations (7 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
@@ -131,9 +132,31 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `file-007`: Unlink deletes a file
-2. Write E2E test for Unlink verification
-3. Update `.features.json` to mark `file-007` as passing
+1. Implement `file-008`: Unlink on non-existent file returns error
+2. Write E2E test for Unlink error handling
+3. Update `.features.json` to mark `file-008` as passing
+
+---
+
+## Session 8 - File Operations (Unlink)
+**Date:** 2026-03-28
+**Goal:** Implement file-007: Unlink deletes a file
+
+### Completed
+- [x] Added E2E test for Unlink file verification
+- [x] Implemented removeDirEntry() helper to remove directory entries
+- [x] Implemented Unlink() to delete file inode and remove from parent directory
+- [x] Updated `.features.json` to mark file-007 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| file-007 | Unlink deletes a file, file no longer exists | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | feat: Implement file-007 Unlink deletes a file |
 
 ---
 

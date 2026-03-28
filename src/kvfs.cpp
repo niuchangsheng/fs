@@ -6,6 +6,7 @@
 #include <chrono>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 namespace kvfs {
 
@@ -276,6 +277,51 @@ public:
         }
 
         return current_oid;
+    }
+
+    /**
+     * @brief 在目录中删除文件条目
+     */
+    bool removeDirEntry(uint64_t dir_oid, const std::string& name) {
+        std::string dir_key = GetInodeKey(dir_oid);
+        auto [found, dir_data] = device_->Get(dir_key).get();
+
+        Inode dir_inode;
+        DirData dir;
+        if (!found) {
+            return false;
+        }
+
+        dir_inode = Inode::Deserialize(dir_data);
+        dir = extractDirData(dir_data);
+
+        // 查找并删除条目
+        bool removed = false;
+        auto it = std::find_if(dir.entries.begin(), dir.entries.end(),
+            [&name](const DirEntry& entry) { return entry.name == name; });
+
+        if (it != dir.entries.end()) {
+            dir.entries.erase(it);
+            removed = true;
+        }
+
+        if (removed) {
+            // 更新目录大小
+            auto serialized_dir = dir.Serialize();
+            dir_inode.size = serialized_dir.size();
+
+            // 更新时间
+            auto now = std::chrono::system_clock::now().time_since_epoch().count();
+            dir_inode.mtime = now;
+            dir_inode.ctime = now;
+
+            // 写回目录
+            std::vector<uint8_t> new_dir_data = dir_inode.Serialize();
+            new_dir_data.insert(new_dir_data.end(), serialized_dir.begin(), serialized_dir.end());
+            device_->Put(dir_key, new_dir_data).get();
+        }
+
+        return removed;
     }
 
     /**
@@ -674,9 +720,61 @@ public:
     }
 
     std::future<int> Unlink(const std::string& path) override {
-        (void)path;
         std::promise<int> promise;
-        promise.set_value(0);
+
+        try {
+            // 根目录不能删除
+            if (path == "/") {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Cannot unlink root directory")));
+                return promise.get_future();
+            }
+
+            // 解析路径获取文件 inode
+            uint64_t file_oid = resolvePath(path);
+            if (file_oid == 0) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("File not found: " + path)));
+                return promise.get_future();
+            }
+
+            // 获取父目录 OID
+            auto components = splitPath(path);
+            uint64_t parent_oid = 1; // 默认根目录
+
+            if (components.size() > 1) {
+                // 解析父目录
+                std::string parent_path = "/";
+                for (size_t i = 0; i < components.size() - 1; ++i) {
+                    parent_path += components[i] + "/";
+                }
+                // 移除尾部的 '/'
+                if (parent_path.size() > 1) {
+                    parent_path.pop_back();
+                }
+                parent_oid = resolvePath(parent_path);
+                if (parent_oid == 0) {
+                    throw std::runtime_error("Parent directory not found: " + parent_path);
+                }
+            }
+
+            // 从父目录中删除条目
+            if (!removeDirEntry(parent_oid, components.back())) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Failed to remove directory entry")));
+                return promise.get_future();
+            }
+
+            // 删除文件 inode
+            std::string inode_key = GetInodeKey(file_oid);
+            device_->Delete(inode_key).get();
+
+            std::cout << "Unlinked file: " << path << " (inode " << file_oid << ")" << std::endl;
+            promise.set_value(0);
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
         return promise.get_future();
     }
 
