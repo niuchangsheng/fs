@@ -779,10 +779,50 @@ public:
     }
 
     std::future<struct stat> Stat(const std::string& path) override {
-        (void)path;
         std::promise<struct stat> promise;
-        struct stat st = {};
-        promise.set_value(st);
+
+        try {
+            // 解析路径获取 inode OID
+            uint64_t inode_oid = resolvePath(path);
+            if (inode_oid == 0) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("File not found: " + path)));
+                return promise.get_future();
+            }
+
+            // 读取 inode
+            std::string inode_key = GetInodeKey(inode_oid);
+            auto [found, inode_data] = device_->Get(inode_key).get();
+            if (!found) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Inode not found: " + std::to_string(inode_oid))));
+                return promise.get_future();
+            }
+
+            Inode inode = Inode::Deserialize(inode_data);
+
+            // 填充 stat 结构
+            struct stat st = {};
+            st.st_size = static_cast<off_t>(inode.size);
+            st.st_mode = inode.mode;
+            st.st_uid = inode.uid;
+            st.st_gid = inode.gid;
+            st.st_atime = static_cast<time_t>(inode.atime / 1000000000ULL);
+            st.st_mtime = static_cast<time_t>(inode.mtime / 1000000000ULL);
+            st.st_ctime = static_cast<time_t>(inode.ctime / 1000000000ULL);
+
+            // 设置文件类型
+            if (inode.type == FileType::Directory) {
+                st.st_mode |= S_IFDIR;
+            } else {
+                st.st_mode |= S_IFREG;
+            }
+
+            promise.set_value(st);
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
         return promise.get_future();
     }
 

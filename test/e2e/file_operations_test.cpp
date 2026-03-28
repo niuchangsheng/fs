@@ -359,6 +359,35 @@ TEST_F(FileOperationsE2ETest, ReadReturnsActualBytesRead) {
     engine->Close(read_handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, WriteUpdatesFileSize) {
+    // io-005: Write updates file size in inode
+    // Step 1: Create empty file
+    auto handle = engine->Open("/io_filesize_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+    engine->Close(handle).get();
+
+    // Step 2: Verify initial size is 0
+    auto stat_before = engine->Stat("/io_filesize_test.txt").get();
+    ASSERT_EQ(stat_before.st_size, 0) << "Initial file size should be 0";
+
+    // Step 3: Write 50 bytes
+    auto write_handle = engine->Open("/io_filesize_test.txt", OpenFlags::ReadWrite).get();
+    ASSERT_NE(write_handle, nullptr);
+
+    std::vector<uint8_t> data(50);
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = static_cast<uint8_t>(i % 256);
+    }
+    engine->Write(write_handle, data).get();
+    engine->Close(write_handle).get();
+
+    // Step 4: Call Stat() on file
+    auto stat_after = engine->Stat("/io_filesize_test.txt").get();
+
+    // Step 5: Verify size is 50
+    ASSERT_EQ(stat_after.st_size, 50) << "File size should be 50 after writing 50 bytes";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

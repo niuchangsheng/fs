@@ -205,8 +205,8 @@
         "Call Stat() on file",
         "Verify size is 50"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "io-006",
