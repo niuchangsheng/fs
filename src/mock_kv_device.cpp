@@ -5,6 +5,8 @@
 #include <rocksdb/db.h>
 #include <rocksdb/options.h>
 #include <stdexcept>
+#include <atomic>
+#include <string>
 #endif
 
 #include <unordered_map>
@@ -15,20 +17,29 @@ namespace kvfs {
 #ifdef KVFS_USE_ROCKSDB
 /**
  * @brief RocksDB 后端实现
+ * 使用临时目录模拟 KV 设备
  */
 class MockKVDevice : public KVDevice {
 public:
     MockKVDevice() {
         rocksdb::Options options;
         options.create_if_missing = true;
-        rocksdb::Status status = rocksdb::DB::Open(options, ":memory:", &db_);
+
+        // 使用唯一路径避免锁冲突
+        static std::atomic<int> instance_id{0};
+        std::string path = "/tmp/kvfs_rocksdb_" + std::to_string(instance_id++);
+
+        rocksdb::Status status = rocksdb::DB::Open(options, path, &db_);
         if (!status.ok()) {
             throw std::runtime_error("Failed to open RocksDB: " + status.ToString());
         }
+        db_path_ = path;
     }
 
     ~MockKVDevice() override {
         delete db_;
+        // 清理临时数据
+        rocksdb::DestroyDB(db_path_, rocksdb::Options());
     }
 
     std::future<bool> Put(const std::string& key, std::span<const uint8_t> value) override {
@@ -73,6 +84,7 @@ public:
 
 private:
     rocksdb::DB* db_ = nullptr;
+    std::string db_path_;
 };
 #else
 /**
