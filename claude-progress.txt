@@ -115,7 +115,7 @@
 | io-001: Write data to file at current offset | `482054f` |
 | io-002: Read data from file at current offset | `61356bc` |
 | io-003: Write returns actual bytes written | `0c10efc` |
-| io-004: Read returns actual bytes read | `TODO` |
+| io-004: Read returns actual bytes read | `71f6455` |
 
 ### Pending Features (32 failing)
 - `io-005` to `io-007`: IO operations (3 features)
@@ -158,12 +158,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| io-004 | Read returns actual bytes read | `TODO` |
+| io-004 | Read returns actual bytes read | `71f6455` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | test: Add E2E test for io-004 Read return value |
+| `71f6455` | test: Add E2E test for io-004 Read return value |
 
 ---
 
