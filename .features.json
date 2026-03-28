@@ -151,8 +151,8 @@
         "Verify returned bytes written equals data size",
         "Verify file offset is advanced"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "io-002",

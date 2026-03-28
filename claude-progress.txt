@@ -109,8 +109,13 @@
 | file-007: Unlink deletes a file | `c1187ed` |
 | file-008: Unlink on non-existent file returns error | `1ae908f` |
 
-### Pending Features (36 failing)
-- `io-001` to `io-007`: IO operations (7 features)
+### IO Operations Features (1 passing)
+| Feature | Commit |
+|---------|--------|
+| io-001: Write data to file at current offset | `TODO` |
+
+### Pending Features (35 failing)
+- `io-002` to `io-007`: IO operations (6 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
 - `sync-001` to `sync-002`: Durability (2 features)
@@ -132,9 +137,31 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `io-001`: Write data to file at current offset
-2. Write E2E test for Write operation verification
-3. Update `.features.json` to mark io-001 as passing
+1. Implement `io-002`: Read data from file at current offset
+2. Write E2E test for Read operation verification
+3. Update `.features.json` to mark io-002 as passing
+
+---
+
+## Session 10 - IO Operations (Write)
+**Date:** 2026-03-28
+**Goal:** Implement io-001: Write data to file at current offset
+
+### Completed
+- [x] Added E2E test for Write operation verification
+- [x] Verified Write() returns correct bytes written
+- [x] Verified file offset is advanced after write
+- [x] Updated `.features.json` to mark io-001 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| io-001 | Write data to file at current offset | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | test: Add E2E test for io-001 Write operation |
 
 ---
 

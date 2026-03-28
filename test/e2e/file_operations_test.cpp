@@ -250,6 +250,31 @@ TEST_F(FileOperationsE2ETest, UnlinkNonExistentFile) {
     ASSERT_TRUE(unlink_failed) << "Unlink on non-existent file should return error";
 }
 
+TEST_F(FileOperationsE2ETest, WriteDataToFile) {
+    // io-001: Write data to file at current offset
+    // Step 1: Open file with WriteOnly or ReadWrite
+    auto handle = engine->Open("/io_write_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr) << "Open should return a valid handle";
+
+    // Step 2: Prepare data buffer
+    std::string content = "Hello, IO Operations!";
+    std::vector<uint8_t> data(content.begin(), content.end());
+
+    // Step 3: Call Write() with handle and data
+    auto bytes_written = engine->Write(handle, data).get();
+
+    // Step 4: Verify returned bytes written equals data size
+    ASSERT_EQ(bytes_written, static_cast<ssize_t>(data.size()))
+        << "Write should return the number of bytes written";
+
+    // Step 5: Verify file offset is advanced
+    uint64_t new_offset = handle->GetOffset();
+    ASSERT_EQ(new_offset, static_cast<uint64_t>(data.size()))
+        << "File offset should be advanced by the number of bytes written";
+
+    engine->Close(handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
