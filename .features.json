@@ -77,8 +77,8 @@
         "Verify handle->GetPath() returns '/test.txt'",
         "Verify file is created in filesystem"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "file-002",

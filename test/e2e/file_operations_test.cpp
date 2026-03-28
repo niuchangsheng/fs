@@ -25,11 +25,14 @@ protected:
 };
 
 TEST_F(FileOperationsE2ETest, OpenCreateFile) {
-    // TODO: Implement Open API
-    // auto handle = engine->Open("/test.txt", OpenFlags::Create).get();
-    // ASSERT_NE(handle, nullptr);
-    // ASSERT_EQ(handle->GetPath(), "/test.txt");
-    GTEST_SKIP() << "Open API not yet implemented";
+    // file-001: Open file with Create flag creates new file
+    auto handle = engine->Open("/test.txt", OpenFlags::Create).get();
+
+    // Verify FileHandle is returned (not null)
+    ASSERT_NE(handle, nullptr);
+
+    // Verify handle->GetPath() returns '/test.txt'
+    ASSERT_EQ(handle->GetPath(), "/test.txt");
 }
 
 TEST_F(FileOperationsE2ETest, WriteThenReadRoundtrip) {
