@@ -120,8 +120,13 @@
 | io-006: Write with Append flag appends to end | `8671a51` |
 | io-007: Write with Truncate flag clears file first | `abe17cc` |
 
-### Pending Features (29 failing)
-- `seek-001` to `seek-004`: Seek operations (4 features)
+### Seek Operations Features (1 passing)
+| Feature | Commit |
+|---------|--------|
+| seek-001: Lseek with SEEK_SET moves to absolute offset | `TODO` |
+
+### Pending Features (28 failing)
+- `seek-002` to `seek-004`: Seek operations (3 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
 - `sync-001` to `sync-002`: Durability (2 features)
 - `dir-001` to `dir-004`: Directory operations (4 features)
@@ -142,9 +147,31 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `seek-001`: Lseek with SEEK_SET moves to absolute offset
-2. Write E2E test for Lseek SEEK_SET verification
-3. Update `.features.json` to mark seek-001 as passing
+1. Implement `seek-002`: Lseek with SEEK_CUR moves relative to current
+2. Write E2E test for Lseek SEEK_CUR verification
+3. Update `.features.json` to mark seek-002 as passing
+
+---
+
+## Session 17 - Seek Operations (SEEK_SET)
+**Date:** 2026-03-29
+**Goal:** Implement seek-001: Lseek with SEEK_SET moves to absolute offset
+
+### Completed
+- [x] Added E2E test for Lseek SEEK_SET verification
+- [x] Verified Lseek() with Whence::Set returns absolute offset
+- [x] Verified handle offset is updated after Lseek
+- [x] Updated `.features.json` to mark seek-001 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| seek-001 | Lseek with SEEK_SET moves to absolute offset | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | test: Add E2E test for seek-001 Lseek SEEK_SET |
 
 ---
 

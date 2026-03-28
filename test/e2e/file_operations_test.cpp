@@ -472,6 +472,25 @@ TEST_F(FileOperationsE2ETest, WriteWithTruncateFlag) {
     engine->Close(read_handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, LseekWithSeekSet) {
+    // seek-001: Lseek with SEEK_SET moves to absolute offset
+    // Step 1: Open a file
+    auto handle = engine->Open("/lseek_seekset_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+
+    // Step 2: Call Lseek(handle, 100, Whence::Set)
+    off_t new_offset = engine->Lseek(handle, 100, Whence::Set);
+
+    // Step 3: Verify returned offset is 100
+    ASSERT_EQ(new_offset, 100) << "Lseek with SEEK_SET should return the absolute offset";
+
+    // Verify the handle's offset is also updated
+    ASSERT_EQ(handle->GetOffset(), static_cast<uint64_t>(100))
+        << "Handle offset should be updated to 100";
+
+    engine->Close(handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
