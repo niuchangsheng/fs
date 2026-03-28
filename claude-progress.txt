@@ -106,7 +106,7 @@
 | file-004: Open with ReadWrite flag | `add6158` |
 | file-005: Open returns FileHandle with valid path | `add6158` |
 | file-006: Close releases file handle resources | `31e6695` |
-| file-007: Unlink deletes a file | `TODO` |
+| file-007: Unlink deletes a file | `c1187ed` |
 
 ### Pending Features (37 failing)
 - `file-008`: Unlink on non-existent file (1 feature)
@@ -151,12 +151,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| file-007 | Unlink deletes a file, file no longer exists | `TODO` |
+| file-007 | Unlink deletes a file, file no longer exists | `c1187ed` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | feat: Implement file-007 Unlink deletes a file |
+| `c1187ed` | feat: Implement file-007 Unlink deletes a file |
 
 ---
 
