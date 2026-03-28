@@ -1,0 +1,335 @@
+{
+  "project": "KVFS - NVMe KV POSIX File System",
+  "description": "A high-performance storage engine that maps POSIX file semantics to NVMe Key-Value storage",
+  "features": [
+    {
+      "id": "core-001",
+      "category": "core",
+      "description": "KVEngine initialization with device binding",
+      "status": "passing",
+      "tested": true
+    },
+    {
+      "id": "core-002",
+      "category": "core",
+      "description": "Superblock creation and persistence",
+      "status": "passing",
+      "tested": true
+    },
+    {
+      "id": "core-003",
+      "category": "core",
+      "description": "Root inode creation on format",
+      "status": "passing",
+      "tested": true
+    },
+    {
+      "id": "core-004",
+      "category": "core",
+      "description": "Mount existing filesystem",
+      "status": "passing",
+      "tested": true
+    },
+    {
+      "id": "core-005",
+      "category": "core",
+      "description": "Graceful shutdown with resource cleanup",
+      "status": "passing",
+      "tested": true
+    },
+    {
+      "id": "file-001",
+      "category": "file_operations",
+      "description": "Open file with Create flag creates new file",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "file-002",
+      "category": "file_operations",
+      "description": "Open file with ReadOnly flag",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "file-003",
+      "category": "file_operations",
+      "description": "Open file with WriteOnly flag",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "file-004",
+      "category": "file_operations",
+      "description": "Open file with ReadWrite flag",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "file-005",
+      "category": "file_operations",
+      "description": "Open returns FileHandle with valid path",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "file-006",
+      "category": "file_operations",
+      "description": "Close releases file handle resources",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "io-001",
+      "category": "io_operations",
+      "description": "Write data to file at current offset",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "io-002",
+      "category": "io_operations",
+      "description": "Read data from file at current offset",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "io-003",
+      "category": "io_operations",
+      "description": "Write returns actual bytes written",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "io-004",
+      "category": "io_operations",
+      "description": "Read returns actual bytes read",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "io-005",
+      "category": "io_operations",
+      "description": "Write updates file size in inode",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "io-006",
+      "category": "io_operations",
+      "description": "Write with Append flag appends to end",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "io-007",
+      "category": "io_operations",
+      "description": "Write with Truncate flag clears file first",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "seek-001",
+      "category": "seek_operations",
+      "description": "Lseek with SEEK_SET moves to absolute offset",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "seek-002",
+      "category": "seek_operations",
+      "description": "Lseek with SEEK_CUR moves relative to current",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "seek-003",
+      "category": "seek_operations",
+      "description": "Lseek with SEEK_END moves relative to end",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "seek-004",
+      "category": "seek_operations",
+      "description": "Lseek returns new offset position",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "meta-001",
+      "category": "metadata",
+      "description": "Stat returns file size",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "meta-002",
+      "category": "metadata",
+      "description": "Stat returns file type (regular/directory)",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "meta-003",
+      "category": "metadata",
+      "description": "Stat returns access/modify/change times",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "meta-004",
+      "category": "metadata",
+      "description": "Stat returns uid and gid",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "meta-005",
+      "category": "metadata",
+      "description": "Write updates mtime (modification time)",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "meta-006",
+      "category": "metadata",
+      "description": "Read updates atime (access time)",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "file-007",
+      "category": "file_operations",
+      "description": "Unlink deletes a file",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "file-008",
+      "category": "file_operations",
+      "description": "Unlink on non-existent file returns error",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "sync-001",
+      "category": "durability",
+      "description": "Fsync flushes dirty data to KV device",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "sync-002",
+      "category": "durability",
+      "description": "Fsync flushes metadata to KV device",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "dir-001",
+      "category": "directory",
+      "description": "Create directory with mkdir semantics",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "dir-002",
+      "category": "directory",
+      "description": "List directory contents",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "dir-003",
+      "category": "directory",
+      "description": "Navigate nested directory paths",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "dir-004",
+      "category": "directory",
+      "description": "Remove empty directory",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "path-001",
+      "category": "path_resolution",
+      "description": "Resolve absolute path from root",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "path-002",
+      "category": "path_resolution",
+      "description": "Resolve relative path from current",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "path-003",
+      "category": "path_resolution",
+      "description": "Handle . and .. path components",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "path-004",
+      "category": "path_resolution",
+      "description": "Handle trailing slashes",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "conv-001",
+      "category": "concurrency",
+      "description": "Concurrent reads on same file",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "conv-002",
+      "category": "concurrency",
+      "description": "Concurrent writes use CoW semantics",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "conv-003",
+      "category": "concurrency",
+      "description": "Atomic inode update via CAS",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "rec-001",
+      "category": "recovery",
+      "description": "Mount recovers from unclean shutdown",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "rec-002",
+      "category": "recovery",
+      "description": "WAL replay on crash recovery",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "perf-001",
+      "category": "performance",
+      "description": "Inline data for small files (<4KB)",
+      "status": "failing",
+      "tested": false
+    },
+    {
+      "id": "perf-002",
+      "category": "performance",
+      "description": "Chunk-based storage for large files",
+      "status": "failing",
+      "tested": false
+    }
+  ]
+}

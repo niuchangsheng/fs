@@ -1,0 +1,37 @@
+# KVFS Agent Progress Log
+
+## Session 1 - Initial Environment Setup
+**Date:** 2026-03-28
+**Goal:** Set up harness environment for long-running development
+
+### Completed
+- [x] Created `.gitignore` to exclude `build/` directory
+- [x] Created `.features.json` with 48 features across 10 categories
+- [x] Features marked by category:
+  - `core`: 5 features (all passing - Init, Superblock, Root Inode, Mount, Shutdown)
+  - `file_operations`: 8 features (all failing)
+  - `io_operations`: 7 features (all failing)
+  - `seek_operations`: 4 features (all failing)
+  - `metadata`: 6 features (all failing)
+  - `durability`: 2 features (all failing)
+  - `directory`: 4 features (all failing)
+  - `path_resolution`: 4 features (all failing)
+  - `concurrency`: 3 features (all failing)
+  - `recovery`: 2 features (all failing)
+  - `performance`: 2 features (all failing)
+
+### Next Session Should
+1. Pick ONE feature from `file_operations` category to implement
+2. Recommended starting point: `file-001` - "Open file with Create flag creates new file"
+3. Write a test case in `examples/harness_test.cpp` that demonstrates the feature
+4. Implement the minimum code to make the test pass
+5. Update `.features.json` to mark the feature as `"status": "passing", "tested": true`
+6. Commit with descriptive message
+
+### Rules for Coding Agents
+- Work on ONE feature at a time
+- Always write tests BEFORE implementation
+- Never remove or modify existing features in `.features.json`
+- Only change `status` and `tested` fields when a feature is complete
+- Commit after each feature is complete
+- Keep code clean and ready for merge to main
