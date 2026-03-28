@@ -101,8 +101,8 @@
         "Call Open() with OpenFlags::WriteOnly",
         "Verify read operations fail on this handle"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "file-004",

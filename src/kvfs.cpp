@@ -416,9 +416,28 @@ public:
     }
 
     std::future<ssize_t> Read(std::shared_ptr<FileHandle> handle, std::span<uint8_t> buf, size_t count) override {
-        (void)handle; (void)buf; (void)count;
         std::promise<ssize_t> promise;
-        promise.set_value(0); 
+
+        // Check handle type
+        auto impl = std::dynamic_pointer_cast<FileHandleImpl>(handle);
+        if (!impl) {
+            promise.set_exception(std::make_exception_ptr(std::runtime_error("Invalid handle type")));
+            return promise.get_future();
+        }
+
+        // Check if handle is write-only
+        OpenFlags flags = impl->GetFlags();
+        bool write_only = (static_cast<int>(flags) & static_cast<int>(OpenFlags::WriteOnly)) != 0;
+
+        if (write_only) {
+            promise.set_exception(std::make_exception_ptr(
+                std::runtime_error("Cannot read from write-only file handle")));
+            return promise.get_future();
+        }
+
+        // TODO: Implement actual read logic
+        (void)buf; (void)count;
+        promise.set_value(0);
         return promise.get_future();
     }
 

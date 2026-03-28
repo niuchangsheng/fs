@@ -72,6 +72,38 @@ TEST_F(FileOperationsE2ETest, OpenReadOnlyFile) {
     ASSERT_TRUE(write_failed) << "Write on ReadOnly handle should fail";
 }
 
+TEST_F(FileOperationsE2ETest, OpenWriteOnlyFile) {
+    // file-003: Open file with WriteOnly flag
+    // Step 1: Create a file with some content
+    auto read_handle = engine->Open("/writeonly_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(read_handle, nullptr);
+
+    std::string content = "Hello, WriteOnly Test!";
+    std::vector<uint8_t> data(content.begin(), content.end());
+    engine->Write(read_handle, data).get();
+    engine->Close(read_handle).get();
+
+    // Step 2: Open file with OpenFlags::WriteOnly
+    auto wo_handle = engine->Open("/writeonly_test.txt", OpenFlags::WriteOnly).get();
+    ASSERT_NE(wo_handle, nullptr);
+    ASSERT_EQ(wo_handle->GetPath(), "/writeonly_test.txt");
+
+    // Step 3: Verify read operations fail on WriteOnly handle
+    std::vector<uint8_t> read_buf(100);
+    auto read_future = engine->Read(wo_handle, read_buf, read_buf.size());
+
+    // Read should throw exception or return error
+    bool read_failed = false;
+    try {
+        read_future.get();
+    } catch (const std::exception& e) {
+        read_failed = true;
+        std::cout << "Expected read failure: " << e.what() << std::endl;
+    }
+
+    ASSERT_TRUE(read_failed) << "Read on WriteOnly handle should fail";
+}
+
 TEST_F(FileOperationsE2ETest, UnlinkFile) {
     // TODO: Implement Open/Unlink APIs
     GTEST_SKIP() << "Unlink API not yet implemented";
