@@ -105,7 +105,7 @@
 | file-003: Open with WriteOnly flag | `3cb7789` |
 | file-004: Open with ReadWrite flag | `add6158` |
 | file-005: Open returns FileHandle with valid path | `add6158` |
-| file-006: Close releases file handle resources | `TODO` |
+| file-006: Close releases file handle resources | `31e6695` |
 
 ### Pending Features (38 failing)
 - `file-007` to `file-008`: File operations (2 features)
@@ -150,12 +150,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| file-006 | Close releases file handle resources, subsequent operations fail | `TODO` |
+| file-006 | Close releases file handle resources, subsequent operations fail | `31e6695` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | feat: Implement file-006 Close releases file handle resources |
+| `31e6695` | feat: Implement file-006 Close releases file handle resources |
 
 ---
 
