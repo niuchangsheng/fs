@@ -191,8 +191,8 @@
         "Call Read() with 100 byte buffer",
         "Verify Read() returns 100"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "io-005",

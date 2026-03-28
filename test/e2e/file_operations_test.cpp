@@ -332,6 +332,33 @@ TEST_F(FileOperationsE2ETest, WriteReturnsActualBytesWritten) {
     engine->Close(handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, ReadReturnsActualBytesRead) {
+    // io-004: Read returns actual bytes read
+    // Step 1: Create file with 100 bytes content
+    auto write_handle = engine->Open("/io_read_bytes_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(write_handle, nullptr);
+
+    std::vector<uint8_t> write_data(100);
+    for (size_t i = 0; i < write_data.size(); ++i) {
+        write_data[i] = static_cast<uint8_t>(i % 256);
+    }
+    engine->Write(write_handle, write_data).get();
+    engine->Close(write_handle).get();
+
+    // Step 2: Open file for reading
+    auto read_handle = engine->Open("/io_read_bytes_test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(read_handle, nullptr);
+
+    // Step 3: Call Read() with 100 byte buffer
+    std::vector<uint8_t> read_buf(100);
+    auto bytes_read = engine->Read(read_handle, read_buf, read_buf.size()).get();
+
+    // Step 4: Verify Read() returns 100
+    ASSERT_EQ(bytes_read, 100) << "Read should return 100 bytes read";
+
+    engine->Close(read_handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

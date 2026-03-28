@@ -109,15 +109,16 @@
 | file-007: Unlink deletes a file | `c1187ed` |
 | file-008: Unlink on non-existent file returns error | `1ae908f` |
 
-### IO Operations Features (3 passing)
+### IO Operations Features (4 passing)
 | Feature | Commit |
 |---------|--------|
 | io-001: Write data to file at current offset | `482054f` |
 | io-002: Read data from file at current offset | `61356bc` |
 | io-003: Write returns actual bytes written | `0c10efc` |
+| io-004: Read returns actual bytes read | `TODO` |
 
-### Pending Features (33 failing)
-- `io-004` to `io-007`: IO operations (4 features)
+### Pending Features (32 failing)
+- `io-005` to `io-007`: IO operations (3 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
 - `sync-001` to `sync-002`: Durability (2 features)
@@ -139,9 +140,30 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `io-004`: Read returns actual bytes read
-2. Write E2E test for Read return value verification
-3. Update `.features.json` to mark io-004 as passing
+1. Implement `io-005`: Write updates file size in inode
+2. Write E2E test for Write file size update verification
+3. Update `.features.json` to mark io-005 as passing
+
+---
+
+## Session 13 - IO Operations (Read Return Value)
+**Date:** 2026-03-28
+**Goal:** Implement io-004: Read returns actual bytes read
+
+### Completed
+- [x] Added E2E test for Read return value verification
+- [x] Verified Read() returns correct bytes read (100 bytes)
+- [x] Updated `.features.json` to mark io-004 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| io-004 | Read returns actual bytes read | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | test: Add E2E test for io-004 Read return value |
 
 ---
 
