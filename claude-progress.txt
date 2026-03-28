@@ -117,7 +117,7 @@
 | io-003: Write returns actual bytes written | `0c10efc` |
 | io-004: Read returns actual bytes read | `71f6455` |
 | io-005: Write updates file size in inode | `cfbf3a5` |
-| io-006: Write with Append flag appends to end | `TODO` |
+| io-006: Write with Append flag appends to end | `8671a51` |
 
 ### Pending Features (30 failing)
 - `io-007`: Write with Truncate flag (1 feature)
@@ -161,12 +161,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| io-006 | Write with Append flag appends to end | `TODO` |
+| io-006 | Write with Append flag appends to end | `8671a51` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | feat: Implement Append flag support for io-006 |
+| `8671a51` | feat: Implement Append flag support for io-006 |
 
 ---
 
