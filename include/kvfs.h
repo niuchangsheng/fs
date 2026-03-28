@@ -40,6 +40,7 @@ public:
     virtual ~FileHandle() = default;
     virtual const std::string& GetPath() const = 0;
     virtual uint64_t GetOffset() const = 0;
+    virtual OpenFlags GetFlags() const = 0;
 };
 
 /**

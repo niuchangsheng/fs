@@ -29,6 +29,7 @@ public:
     const std::string& GetPath() const override { return path_; }
     uint64_t GetOffset() const override { return offset_; }
     uint64_t GetInodeOid() const { return inode_oid_; }
+    OpenFlags GetFlags() const { return flags_; }
     void SetOffset(uint64_t offset) { offset_ = offset; }
 
 private:
@@ -212,6 +213,19 @@ public:
     }
 
     /**
+     * @brief 从 inode 数据中提取目录数据
+     */
+    DirData extractDirData(const std::vector<uint8_t>& inode_data) {
+        Inode inode = Inode::Deserialize(inode_data);
+        if (inode_data.size() > sizeof(Inode)) {
+            // 有 payload 数据
+            std::vector<uint8_t> payload(inode_data.begin() + sizeof(Inode), inode_data.end());
+            return DirData::Deserialize(payload);
+        }
+        return DirData{}; // 空目录
+    }
+
+    /**
      * @brief 解析路径到 inode OID
      * @return 如果找到返回 inode OID，否则返回 0
      */
@@ -241,7 +255,7 @@ public:
             }
 
             // 解析目录数据
-            DirData dir = DirData::Deserialize(dir_data);
+            DirData dir = extractDirData(dir_data);
 
             // 查找目标条目
             bool found_entry = false;
@@ -272,7 +286,7 @@ public:
         DirData dir;
         if (found) {
             dir_inode = Inode::Deserialize(dir_data);
-            dir = DirData::Deserialize(dir_data);
+            dir = extractDirData(dir_data);
         } else {
             throw std::runtime_error("Directory inode not found: " + std::to_string(dir_oid));
         }
@@ -409,8 +423,25 @@ public:
     }
 
     std::future<ssize_t> Write(std::shared_ptr<FileHandle> handle, std::span<const uint8_t> data) override {
-        (void)handle;
         std::promise<ssize_t> promise;
+
+        // Check if handle is read-only
+        auto impl = std::dynamic_pointer_cast<FileHandleImpl>(handle);
+        if (!impl) {
+            promise.set_exception(std::make_exception_ptr(std::runtime_error("Invalid handle type")));
+            return promise.get_future();
+        }
+
+        OpenFlags flags = impl->GetFlags();
+        bool read_only = (static_cast<int>(flags) & static_cast<int>(OpenFlags::ReadOnly)) != 0;
+
+        if (read_only) {
+            promise.set_exception(std::make_exception_ptr(
+                std::runtime_error("Cannot write to read-only file handle")));
+            return promise.get_future();
+        }
+
+        // TODO: Implement actual write logic
         promise.set_value(data.size());
         return promise.get_future();
     }

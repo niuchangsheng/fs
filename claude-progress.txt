@@ -9,7 +9,7 @@
 - [x] Created `.features.json` with 48 features across 10 categories
 - [x] Features marked by category:
   - `core`: 5 features (all passing - Init, Superblock, Root Inode, Mount, Shutdown)
-  - `file_operations`: 8 features (all failing)
+  - `file_operations`: 8 features (file-001, file-002 passing)
   - `io_operations`: 7 features (all failing)
   - `seek_operations`: 4 features (all failing)
   - `metadata`: 6 features (all failing)
@@ -28,6 +28,7 @@
 | core-003 | Root inode creation on format | `903d4be` |
 | core-004 | Mount existing filesystem | `903d4be` |
 | core-005 | Graceful shutdown with resource cleanup | `903d4be` |
+| file-001 | Open file with Create flag creates new file | `e9db5c3` |
 
 ---
 
@@ -96,8 +97,14 @@
 | core-004: Mount existing | `903d4be`, `72facdf` |
 | core-005: Graceful shutdown | `903d4be` |
 
-### Pending Features (43 failing)
-- `file-001` to `file-008`: File operations (8 features)
+### File Operations Features (2 passing)
+| Feature | Commit |
+|---------|--------|
+| file-001: Open with Create flag | `e9db5c3` |
+| file-002: Open with ReadOnly flag | `TODO` |
+
+### Pending Features (41 failing)
+- `file-003` to `file-008`: File operations (6 features)
 - `io-001` to `io-007`: IO operations (7 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
@@ -120,8 +127,28 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `Open()` API in `src/kvfs.cpp`
-2. Start with `file-001`: Open file with Create flag creates new file
-3. Write E2E test in `test/e2e/file_operations_test.cpp`
-4. Update `.features.json` to mark `file-001` as passing
-5. Update `claude-progress.txt` with the new commit ID
+1. Implement `file-003`: Open file with WriteOnly flag
+2. Write E2E test for WriteOnly flag verification
+3. Update `.features.json` to mark `file-003` as passing
+
+---
+
+## Session 4 - File Operations (ReadOnly)
+**Date:** 2026-03-28
+**Goal:** Implement file-002: Open file with ReadOnly flag
+
+### Completed
+- [x] Added E2E test for ReadOnly flag verification
+- [x] Implemented GetFlags() method in FileHandle interface
+- [x] Added ReadOnly check in Write() operation
+- [x] Fixed DirData parsing in resolvePath and createDirEntry
+- [x] Updated `.features.json` to mark file-002 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| file-002 | Open with ReadOnly flag, write fails | `TODO` |
+
+### Bug Fixes
+- Fixed `DirData::Deserialize` to correctly parse payload data after inode structure
+- Added `extractDirData()` helper to extract directory entries from inode+payload data
