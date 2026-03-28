@@ -388,6 +388,45 @@ TEST_F(FileOperationsE2ETest, WriteUpdatesFileSize) {
     ASSERT_EQ(stat_after.st_size, 50) << "File size should be 50 after writing 50 bytes";
 }
 
+TEST_F(FileOperationsE2ETest, WriteWithAppendFlag) {
+    // io-006: Write with Append flag appends to end
+    // Step 1: Create file with existing content
+    auto write_handle = engine->Open("/io_append_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(write_handle, nullptr);
+
+    std::string initial_content = "Initial content!";
+    std::vector<uint8_t> initial_data(initial_content.begin(), initial_content.end());
+    engine->Write(write_handle, initial_data).get();
+    engine->Close(write_handle).get();
+
+    // Step 2: Open with OpenFlags::Append
+    auto append_handle = engine->Open("/io_append_test.txt", OpenFlags::Append).get();
+    ASSERT_NE(append_handle, nullptr);
+
+    // Step 3: Write new data
+    std::string appended_content = " - Appended!";
+    std::vector<uint8_t> append_data(appended_content.begin(), appended_content.end());
+    engine->Write(append_handle, append_data).get();
+    engine->Close(append_handle).get();
+
+    // Step 4: Verify data is appended after original content
+    auto read_handle = engine->Open("/io_append_test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(read_handle, nullptr);
+
+    auto stat = engine->Stat("/io_append_test.txt").get();
+    size_t total_size = static_cast<size_t>(stat.st_size);
+
+    std::vector<uint8_t> read_buf(total_size);
+    auto bytes_read = engine->Read(read_handle, read_buf, total_size).get();
+    ASSERT_EQ(bytes_read, static_cast<ssize_t>(total_size));
+
+    std::string expected = initial_content + appended_content;
+    std::string actual(read_buf.begin(), read_buf.end());
+    ASSERT_EQ(actual, expected) << "Appended content should be at the end of original content";
+
+    engine->Close(read_handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

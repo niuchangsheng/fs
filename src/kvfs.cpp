@@ -455,6 +455,18 @@ public:
             }
 
             auto handle = std::make_shared<FileHandleImpl>(path, inode_oid, flags);
+
+            // 处理 Append 标志：将偏移量设置到文件末尾
+            bool append = (static_cast<int>(flags) & static_cast<int>(OpenFlags::Append)) != 0;
+            if (append && inode_oid != 0) {
+                std::string inode_key = GetInodeKey(inode_oid);
+                auto [found, inode_data] = device_->Get(inode_key).get();
+                if (found) {
+                    Inode inode = Inode::Deserialize(inode_data);
+                    handle->SetOffset(inode.size);
+                }
+            }
+
             promise.set_value(handle);
         } catch (const std::exception& e) {
             std::cerr << "Open failed: " << e.what() << std::endl;

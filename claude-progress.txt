@@ -109,7 +109,7 @@
 | file-007: Unlink deletes a file | `c1187ed` |
 | file-008: Unlink on non-existent file returns error | `1ae908f` |
 
-### IO Operations Features (5 passing)
+### IO Operations Features (6 passing)
 | Feature | Commit |
 |---------|--------|
 | io-001: Write data to file at current offset | `482054f` |
@@ -117,9 +117,10 @@
 | io-003: Write returns actual bytes written | `0c10efc` |
 | io-004: Read returns actual bytes read | `71f6455` |
 | io-005: Write updates file size in inode | `cfbf3a5` |
+| io-006: Write with Append flag appends to end | `TODO` |
 
-### Pending Features (31 failing)
-- `io-006` to `io-007`: IO operations (2 features)
+### Pending Features (30 failing)
+- `io-007`: Write with Truncate flag (1 feature)
 - `seek-001` to `seek-004`: Seek operations (4 features)
 - `meta-001` to `meta-006`: Metadata operations (6 features)
 - `sync-001` to `sync-002`: Durability (2 features)
@@ -141,9 +142,31 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `io-006`: Write with Append flag appends to end
-2. Write E2E test for Append flag verification
-3. Update `.features.json` to mark io-006 as passing
+1. Implement `io-007`: Write with Truncate flag clears file first
+2. Write E2E test for Truncate flag verification
+3. Update `.features.json` to mark io-007 as passing
+
+---
+
+## Session 15 - IO Operations (Append Flag)
+**Date:** 2026-03-28
+**Goal:** Implement io-006: Write with Append flag appends to end
+
+### Completed
+- [x] Added E2E test for Append flag verification
+- [x] Implemented Append flag support in Open() to set offset to end of file
+- [x] Verified data is appended after original content
+- [x] Updated `.features.json` to mark io-006 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| io-006 | Write with Append flag appends to end | `TODO` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `TODO` | feat: Implement Append flag support for io-006 |
 
 ---
 
