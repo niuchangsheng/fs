@@ -97,13 +97,15 @@
 | core-004: Mount existing | `903d4be`, `72facdf` |
 | core-005: Graceful shutdown | `903d4be` |
 
-### File Operations Features (3 passing)
+### File Operations Features (4 passing)
 | Feature | Commit |
 |---------|--------|
 | file-001: Open with Create flag | `e9db5c3` |
-| file-002: Open with ReadOnly flag | `TODO` |
+| file-002: Open with ReadOnly flag | `b942218` |
+| file-003: Open with WriteOnly flag | `3cb7789` |
+| file-004: Open with ReadWrite flag | `TODO` |
 
-### Pending Features (40 failing)
+### Pending Features (39 failing)
 - `file-003` to `file-008`: File operations (6 features)
 - `io-001` to `io-007`: IO operations (7 features)
 - `seek-001` to `seek-004`: Seek operations (4 features)
@@ -127,9 +129,25 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `file-003`: Open file with WriteOnly flag
-2. Write E2E test for WriteOnly flag verification
-3. Update `.features.json` to mark `file-003` as passing
+1. Implement `file-004`: Open file with ReadWrite flag
+2. Write E2E test for ReadWrite flag verification (both read and write succeed)
+3. Update `.features.json` to mark `file-004` as passing
+
+---
+
+## Session 5 - File Operations (WriteOnly)
+**Date:** 2026-03-28
+**Goal:** Implement file-003: Open file with WriteOnly flag
+
+### Completed
+- [x] Added E2E test for WriteOnly flag verification
+- [x] Added read-only check in Read() operation
+- [x] Updated `.features.json` to mark file-003 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| file-003 | Open with WriteOnly flag, read fails | `3cb7789` |
 
 ---
 
