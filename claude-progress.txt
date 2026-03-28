@@ -107,7 +107,7 @@
 | file-005: Open returns FileHandle with valid path | `add6158` |
 | file-006: Close releases file handle resources | `31e6695` |
 | file-007: Unlink deletes a file | `c1187ed` |
-| file-008: Unlink on non-existent file returns error | `TODO` |
+| file-008: Unlink on non-existent file returns error | `1ae908f` |
 
 ### Pending Features (36 failing)
 - `io-001` to `io-007`: IO operations (7 features)
@@ -150,12 +150,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| file-008 | Unlink on non-existent file returns error | `TODO` |
+| file-008 | Unlink on non-existent file returns error | `1ae908f` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `TODO` | test: Add E2E test for file-008 Unlink error handling |
+| `1ae908f` | test: Add E2E test for file-008 Unlink error handling |
 
 ---
 
