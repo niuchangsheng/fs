@@ -166,12 +166,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| seek-003 | Lseek with SEEK_END moves relative to end | `PENDING` |
+| seek-003 | Lseek with SEEK_END moves relative to end | `4a841db` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for seek-003 Lseek SEEK_END |
+| `4a841db` | test: Add E2E test for seek-003 Lseek SEEK_END |
 
 ---
 
