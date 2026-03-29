@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| path-002 | Resolve relative path from current | `PENDING` |
+| path-002 | Resolve relative path from current | `243bae0` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | feat: Implement path-002 relative path resolution with Chdir |
+| `243bae0` | feat: Implement path-002 relative path resolution with Chdir |
 
 ---
 
