@@ -871,3 +871,28 @@ TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
 }
+
+TEST_F(FileOperationsE2ETest, ResolveAbsolutePathFromRoot) {
+    // path-001: Resolve absolute path from root
+    // Step 1: Create file at '/test.txt'
+    auto handle = engine->Open("/test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr) << "Open should succeed";
+
+    // Write some data
+    std::string content = "Path resolution test";
+    std::vector<uint8_t> data(content.begin(), content.end());
+    engine->Write(handle, data).get();
+    engine->Close(handle).get();
+
+    // Step 2: Open with absolute path '/test.txt'
+    auto abs_handle = engine->Open("/test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(abs_handle, nullptr) << "Open with absolute path should succeed";
+
+    // Verify we can read the file
+    std::vector<uint8_t> read_buf(200);
+    auto bytes_read = engine->Read(abs_handle, read_buf, read_buf.size()).get();
+    std::string actual_content(read_buf.begin(), read_buf.begin() + bytes_read);
+    ASSERT_EQ(actual_content, content) << "Read content should match";
+
+    engine->Close(abs_handle).get();
+}
