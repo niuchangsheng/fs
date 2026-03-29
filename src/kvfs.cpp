@@ -970,6 +970,87 @@ public:
         return promise.get_future();
     }
 
+    std::future<int> Rmdir(const std::string& path) override {
+        std::promise<int> promise;
+
+        try {
+            // 根目录不能删除
+            if (path == "/") {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Cannot remove root directory")));
+                return promise.get_future();
+            }
+
+            // 解析路径获取目录 OID
+            uint64_t dir_oid = resolvePath(path);
+            if (dir_oid == 0) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory not found: " + path)));
+                return promise.get_future();
+            }
+
+            // 读取目录 inode，验证是目录且为空
+            std::string dir_key = GetInodeKey(dir_oid);
+            auto [found, dir_data] = device_->Get(dir_key).get();
+            if (!found) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory inode not found: " + std::to_string(dir_oid))));
+                return promise.get_future();
+            }
+
+            Inode dir_inode = Inode::Deserialize(dir_data);
+
+            // 验证是目录
+            if (dir_inode.type != FileType::Directory) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Not a directory: " + path)));
+                return promise.get_future();
+            }
+
+            // 验证目录为空
+            DirData dir = extractDirData(dir_data);
+            if (!dir.entries.empty()) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory not empty: " + path)));
+                return promise.get_future();
+            }
+
+            // 获取父目录 OID
+            auto components = splitPath(path);
+            uint64_t parent_oid = 1; // 默认根目录
+
+            if (components.size() > 1) {
+                // 解析父目录
+                std::string parent_path = "/";
+                for (size_t i = 0; i < components.size() - 1; ++i) {
+                    parent_path += components[i] + "/";
+                }
+                // 移除尾部的 '/'
+                if (parent_path.size() > 1) {
+                    parent_path.pop_back();
+                }
+                parent_oid = resolvePath(parent_path);
+            }
+
+            // 从父目录中删除条目
+            if (!removeDirEntry(parent_oid, components.back())) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Failed to remove directory entry")));
+                return promise.get_future();
+            }
+
+            // 删除目录 inode
+            device_->Delete(dir_key).get();
+
+            std::cout << "Removed directory: " << path << " (inode " << dir_oid << ")" << std::endl;
+            promise.set_value(0);
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
+        return promise.get_future();
+    }
+
 private:
     std::unique_ptr<KVDevice> device_;
 };

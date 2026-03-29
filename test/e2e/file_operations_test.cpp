@@ -841,6 +841,32 @@ TEST_F(FileOperationsE2ETest, NavigateNestedDirectoryPaths) {
     ASSERT_TRUE(S_ISDIR(stat_c.st_mode)) << "/a/b/c should be a directory";
 }
 
+TEST_F(FileOperationsE2ETest, RmdirRemovesEmptyDirectory) {
+    // dir-004: Remove empty directory
+    // Step 1: Create empty directory
+    auto mkdir_result = engine->Mkdir("/emptydir").get();
+    ASSERT_EQ(mkdir_result, 0) << "Mkdir should succeed";
+
+    // Verify directory exists
+    auto stat_before = engine->Stat("/emptydir").get();
+    ASSERT_TRUE(S_ISDIR(stat_before.st_mode)) << "/emptydir should be a directory";
+
+    // Step 2: Call rmdir()
+    auto rmdir_result = engine->Rmdir("/emptydir").get();
+    ASSERT_EQ(rmdir_result, 0) << "Rmdir should return 0 on success";
+
+    // Step 3: Verify directory is deleted
+    bool open_failed = false;
+    try {
+        auto stat_after = engine->Stat("/emptydir").get();
+        FAIL() << "Directory should not exist after rmdir";
+    } catch (const std::exception& e) {
+        open_failed = true;
+        std::cout << "Expected stat failure after rmdir: " << e.what() << std::endl;
+    }
+    ASSERT_TRUE(open_failed) << "Stat on removed directory should fail";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

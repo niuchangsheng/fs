@@ -139,6 +139,11 @@ public:
      * @brief 列出目录内容
      */
     virtual std::future<std::vector<DirEntryInfo>> Readdir(const std::string& path) = 0;
+
+    /**
+     * @brief 删除空目录
+     */
+    virtual std::future<int> Rmdir(const std::string& path) = 0;
 };
 
 /**
