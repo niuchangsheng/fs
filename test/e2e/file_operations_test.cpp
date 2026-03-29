@@ -896,3 +896,33 @@ TEST_F(FileOperationsE2ETest, ResolveAbsolutePathFromRoot) {
 
     engine->Close(abs_handle).get();
 }
+
+TEST_F(FileOperationsE2ETest, ResolveRelativePathFromCurrent) {
+    // path-002: Resolve relative path from current
+    // Step 1: Create directory and file
+    auto mkdir_result = engine->Mkdir("/mydir").get();
+    ASSERT_EQ(mkdir_result, 0) << "Mkdir should succeed";
+
+    auto handle = engine->Open("/mydir/test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr) << "Open should succeed";
+    std::string content = "Relative path test";
+    std::vector<uint8_t> data(content.begin(), content.end());
+    engine->Write(handle, data).get();
+    engine->Close(handle).get();
+
+    // Step 2: Set current directory to '/mydir'
+    auto chdir_result = engine->Chdir("/mydir").get();
+    ASSERT_EQ(chdir_result, 0) << "Chdir should succeed";
+
+    // Step 3: Open file with relative path 'test.txt'
+    auto rel_handle = engine->Open("test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(rel_handle, nullptr) << "Open with relative path should succeed";
+
+    // Verify we can read the file
+    std::vector<uint8_t> read_buf(200);
+    auto bytes_read = engine->Read(rel_handle, read_buf, read_buf.size()).get();
+    std::string actual_content(read_buf.begin(), read_buf.begin() + bytes_read);
+    ASSERT_EQ(actual_content, content) << "Read content should match";
+
+    engine->Close(rel_handle).get();
+}

@@ -365,8 +365,19 @@ public:
         std::promise<std::shared_ptr<FileHandle>> promise;
 
         try {
+            // 处理相对路径
+            std::string full_path = path;
+            if (!path.empty() && path[0] != '/') {
+                // 相对路径：拼接到当前工作目录
+                if (current_dir_ == "/") {
+                    full_path = "/" + path;
+                } else {
+                    full_path = current_dir_ + "/" + path;
+                }
+            }
+
             // 解析路径
-            uint64_t inode_oid = resolvePath(path);
+            uint64_t inode_oid = resolvePath(full_path);
 
             // 检查是否使用 Create 标志
             bool create = (static_cast<int>(flags) & static_cast<int>(OpenFlags::Create)) != 0;
@@ -375,12 +386,12 @@ public:
             if (inode_oid == 0) {
                 // 文件不存在
                 if (!create) {
-                    throw std::runtime_error("File not found: " + path);
+                    throw std::runtime_error("File not found: " + full_path);
                 }
 
                 // 创建新文件
                 // 1. 确定父目录 OID
-                auto components = splitPath(path);
+                auto components = splitPath(full_path);
                 uint64_t parent_oid = 1; // 默认根目录
 
                 if (components.size() > 1) {
@@ -438,7 +449,7 @@ public:
                 std::cout << "Created new file: " << path << " (inode " << inode_oid << ")" << std::endl;
             } else {
                 // 文件已存在
-                std::cout << "Opened existing file: " << path << " (inode " << inode_oid << ")" << std::endl;
+                std::cout << "Opened existing file: " << full_path << " (inode " << inode_oid << ")" << std::endl;
 
                 // 处理 Truncate 标志
                 if (truncate) {
@@ -456,7 +467,7 @@ public:
                 }
             }
 
-            auto handle = std::make_shared<FileHandleImpl>(path, inode_oid, flags);
+            auto handle = std::make_shared<FileHandleImpl>(full_path, inode_oid, flags);
 
             // 处理 Append 标志：将偏移量设置到文件末尾
             bool append = (static_cast<int>(flags) & static_cast<int>(OpenFlags::Append)) != 0;
@@ -1051,8 +1062,48 @@ public:
         return promise.get_future();
     }
 
+    std::future<int> Chdir(const std::string& path) override {
+        std::promise<int> promise;
+
+        try {
+            // 解析路径获取目录 OID
+            uint64_t dir_oid = resolvePath(path);
+            if (dir_oid == 0) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory not found: " + path)));
+                return promise.get_future();
+            }
+
+            // 读取目录 inode，验证是目录
+            std::string dir_key = GetInodeKey(dir_oid);
+            auto [found, dir_data] = device_->Get(dir_key).get();
+            if (!found) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory inode not found: " + std::to_string(dir_oid))));
+                return promise.get_future();
+            }
+
+            Inode dir_inode = Inode::Deserialize(dir_data);
+            if (dir_inode.type != FileType::Directory) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Not a directory: " + path)));
+                return promise.get_future();
+            }
+
+            // 设置当前工作目录
+            current_dir_ = path;
+
+            promise.set_value(0);
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
+        return promise.get_future();
+    }
+
 private:
     std::unique_ptr<KVDevice> device_;
+    std::string current_dir_ = "/";  // 默认当前目录为根目录
 };
 
 /**

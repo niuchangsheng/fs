@@ -144,6 +144,11 @@ public:
      * @brief 删除空目录
      */
     virtual std::future<int> Rmdir(const std::string& path) = 0;
+
+    /**
+     * @brief 设置当前工作目录
+     */
+    virtual std::future<int> Chdir(const std::string& path) = 0;
 };
 
 /**
