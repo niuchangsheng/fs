@@ -17,7 +17,7 @@
   - `directory`: 4 features (all failing)
   - `path_resolution`: 4 features (all failing)
   - `concurrency`: 3 features (3 passing)
-  - `recovery`: 2 features (1 passing, 1 failing)
+  - `recovery`: 2 features (2 passing)
   - `performance`: 2 features (all failing)
 
 ### Features Implemented
@@ -147,9 +147,33 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `rec-002`: WAL replay on crash recovery
-2. Write E2E test for WAL replay verification
-3. Update `.features.json` to mark rec-002 as passing
+1. Implement `perf-001`: Inline data for small files (<4KB)
+2. Write E2E test for inline data storage verification
+3. Update `.features.json` to mark perf-001 as passing
+
+---
+
+## Session 37 - Recovery (WAL Replay)
+**Date:** 2026-03-29
+**Goal:** Implement rec-002: WAL replay on crash recovery
+
+### Completed
+- [x] Added E2E test for WAL replay crash recovery verification
+- [x] Simulated crash without Fsync after writing data
+- [x] Restarted engine and verified filesystem is consistent
+- [x] Verified data is recoverable after WAL replay
+- [x] Verified filesystem is functional after recovery
+- [x] Updated `.features.json` to mark rec-002 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| rec-002 | WAL replay on crash recovery | TBD |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| TBD | test: Add E2E test for rec-002 WAL replay recovery |
 
 ---
 

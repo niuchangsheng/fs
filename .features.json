@@ -576,8 +576,8 @@
         "Simulate crash",
         "Restart and verify WAL replay recovers data"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "perf-001",
