@@ -563,7 +563,8 @@
         "Verify filesystem is consistent"
       ],
       "status": "passing",
-      "tested": true
+      "tested": true,
+      "commit": "f2d798c"
     },
     {
       "id": "rec-002",

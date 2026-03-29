@@ -168,12 +168,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| rec-001 | Mount recovers from unclean shutdown | TBD |
+| rec-001 | Mount recovers from unclean shutdown | `f2d798c` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| TBD | test: Add E2E test for rec-001 crash recovery with persistent storage support |
+| `f2d798c` | test: Add E2E test for rec-001 crash recovery with persistent storage support |
 
 ---
 
