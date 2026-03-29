@@ -166,12 +166,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| path-003 | Handle . and .. path components | `PENDING` |
+| path-003 | Handle . and .. path components | `252f5ff` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for path-003 dot path components |
+| `252f5ff` | test: Add E2E test for path-003 dot path components |
 
 ---
 
