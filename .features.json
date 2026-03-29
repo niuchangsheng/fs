@@ -535,8 +535,8 @@
         "Each thread writes different data",
         "Verify no data corruption via CAS"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "conv-003",

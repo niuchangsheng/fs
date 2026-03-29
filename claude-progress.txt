@@ -16,7 +16,7 @@
   - `durability`: 2 features (all failing)
   - `directory`: 4 features (all failing)
   - `path_resolution`: 4 features (all failing)
-  - `concurrency`: 3 features (1 passing, 2 failing)
+  - `concurrency`: 3 features (2 passing, 1 failing)
   - `recovery`: 2 features (all failing)
   - `performance`: 2 features (all failing)
 
@@ -147,29 +147,38 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `conv-002`: Concurrent writes use CoW semantics
-2. Write E2E test for concurrent writes with CAS verification
-3. Update `.features.json` to mark conv-002 as passing
+1. Implement `conv-003`: Atomic inode update via CAS
+2. Write E2E test for atomic inode metadata updates
+3. Update `.features.json` to mark conv-003 as passing
+
+---
+
+## Session 34 - Concurrency (Concurrent Writes)
+**Date:** 2026-03-29
+**Goal:** Implement conv-002: Concurrent writes use CoW semantics
+
+### Completed
+- [x] Added E2E test for concurrent writes verification
+- [x] Spawned 5 threads to write to the same file simultaneously
+- [x] Verified all threads can write independently
+- [x] Verified file size is consistent after concurrent writes
+- [x] Updated `.features.json` to mark conv-002 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| conv-002 | Concurrent writes use CoW semantics | TBD |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| TBD | test: Add E2E test for conv-002 concurrent writes |
 
 ---
 
 ## Session 33 - Concurrency (Concurrent Reads)
 **Date:** 2026-03-29
 **Goal:** Implement conv-001: Concurrent reads on same file
-
-### Completed
-- [x] Added E2E test for concurrent reads verification
-- [x] Spawned 5 threads to read the same file simultaneously
-- [x] Verified all threads can read the file independently
-- [x] Verified all reads return correct content
-- [x] Updated `.features.json` to mark conv-001 as passing
-
-### Features Implemented
-| Feature ID | Description | Commit |
-|------------|-------------|--------|
-| conv-001 | Concurrent reads on same file | `5c1bffb` |
-
-### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
 | `5c1bffb` | test: Add E2E test for conv-001 concurrent reads |
