@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| dir-001 | Create directory with mkdir semantics | `PENDING` |
+| dir-001 | Create directory with mkdir semantics | `2a6b875` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | feat: Implement dir-001 Mkdir creates directory |
+| `2a6b875` | feat: Implement dir-001 Mkdir creates directory |
 
 ---
 
