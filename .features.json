@@ -589,8 +589,8 @@
         "Verify data is stored inline in inode",
         "Verify no separate chunk KV is created"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "perf-002",

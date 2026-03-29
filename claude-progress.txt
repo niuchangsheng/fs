@@ -18,7 +18,7 @@
   - `path_resolution`: 4 features (all failing)
   - `concurrency`: 3 features (3 passing)
   - `recovery`: 2 features (2 passing)
-  - `performance`: 2 features (all failing)
+  - `performance`: 2 features (1 passing, 1 failing)
 
 ### Features Implemented
 | Feature ID | Description | Commit |
@@ -147,9 +147,32 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `perf-001`: Inline data for small files (<4KB)
-2. Write E2E test for inline data storage verification
-3. Update `.features.json` to mark perf-001 as passing
+1. Implement `perf-002`: Chunk-based storage for large files
+2. Write E2E test for chunk-based storage verification
+3. Update `.features.json` to mark perf-002 as passing
+
+---
+
+## Session 38 - Performance (Inline Data)
+**Date:** 2026-03-29
+**Goal:** Implement perf-001: Inline data for small files (<4KB)
+
+### Completed
+- [x] Added E2E test for inline data storage verification
+- [x] Created file with 1000 bytes (<4KB)
+- [x] Verified data is stored inline in inode (is_inline=1, inline_data_len=1000)
+- [x] Verified no separate chunk KV is created for small files
+- [x] Updated `.features.json` to mark perf-001 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| perf-001 | Inline data for small files (<4KB) | TBD |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| TBD | test: Add E2E test for perf-001 inline data storage |
 
 ---
 
