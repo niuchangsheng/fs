@@ -548,8 +548,8 @@
         "Verify update uses atomic CAS operation",
         "Verify concurrent modifications are serialized"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "rec-001",
