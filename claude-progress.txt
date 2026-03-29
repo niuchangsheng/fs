@@ -167,13 +167,13 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| meta-005 | Write updates mtime (modification time) | `PENDING` |
-| meta-006 | Read updates atime (access time) | `PENDING` |
+| meta-005 | Write updates mtime (modification time) | `6b6fb53` |
+| meta-006 | Read updates atime (access time) | `6b6fb53` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E tests for meta-005/006 timestamps |
+| `6b6fb53` | test: Add E2E tests for meta-005/006 timestamps |
 
 ---
 
