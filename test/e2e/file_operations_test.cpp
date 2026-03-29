@@ -454,6 +454,58 @@ TEST_F(FileOperationsE2ETest, StatReturnsUidGid) {
     ASSERT_GE(file_stat.st_gid, 0) << "st_gid should be set";
 }
 
+TEST_F(FileOperationsE2ETest, WriteUpdatesMtime) {
+    // meta-005: Write updates mtime (modification time)
+    // Step 1: Create a file
+    auto handle = engine->Open("/meta_mtime_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+    engine->Close(handle).get();
+
+    // Step 2: Record initial mtime
+    auto stat_before = engine->Stat("/meta_mtime_test.txt").get();
+    time_t initial_mtime = stat_before.st_mtime;
+
+    // Step 3: Sleep 1 second
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    // Step 4: Write new data
+    auto write_handle = engine->Open("/meta_mtime_test.txt", OpenFlags::ReadWrite).get();
+    std::vector<uint8_t> data = {1, 2, 3, 4, 5};
+    engine->Write(write_handle, data).get();
+    engine->Close(write_handle).get();
+
+    // Step 5: Call Stat() and verify mtime is updated
+    auto stat_after = engine->Stat("/meta_mtime_test.txt").get();
+    ASSERT_GT(stat_after.st_mtime, initial_mtime) << "mtime should be updated after write";
+}
+
+TEST_F(FileOperationsE2ETest, ReadUpdatesAtime) {
+    // meta-006: Read updates atime (access time)
+    // Step 1: Create a file with some data
+    auto write_handle = engine->Open("/meta_atime_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(write_handle, nullptr);
+    std::vector<uint8_t> data = {1, 2, 3, 4, 5};
+    engine->Write(write_handle, data).get();
+    engine->Close(write_handle).get();
+
+    // Step 2: Record initial atime
+    auto stat_before = engine->Stat("/meta_atime_test.txt").get();
+    time_t initial_atime = stat_before.st_atime;
+
+    // Step 3: Sleep 1 second
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    // Step 4: Read data
+    auto read_handle = engine->Open("/meta_atime_test.txt", OpenFlags::ReadOnly).get();
+    std::vector<uint8_t> read_buf(100);
+    engine->Read(read_handle, read_buf, read_buf.size()).get();
+    engine->Close(read_handle).get();
+
+    // Step 5: Call Stat() and verify atime is updated
+    auto stat_after = engine->Stat("/meta_atime_test.txt").get();
+    ASSERT_GT(stat_after.st_atime, initial_atime) << "atime should be updated after read";
+}
+
 TEST_F(FileOperationsE2ETest, WriteWithAppendFlag) {
     // io-006: Write with Append flag appends to end
     // Step 1: Create file with existing content

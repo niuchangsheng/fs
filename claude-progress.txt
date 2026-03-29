@@ -147,9 +147,33 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `meta-005`: Write updates mtime (modification time)
-2. Write E2E test for mtime update verification
-3. Update `.features.json` to mark meta-005 as passing
+1. Implement `sync-001`: Fsync flushes dirty data to KV device
+2. Write E2E test for Fsync data durability verification
+3. Update `.features.json` to mark sync-001 as passing
+
+---
+
+## Session 23 - Metadata Operations (mtime/atime)
+**Date:** 2026-03-29
+**Goal:** Implement meta-005, meta-006
+
+### Completed
+- [x] Added E2E test for Write updating mtime verification
+- [x] Added E2E test for Read updating atime verification
+- [x] Verified Write() updates mtime/ctime timestamps
+- [x] Verified Read() updates atime timestamp
+- [x] Updated `.features.json` to mark meta-005, meta-006 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| meta-005 | Write updates mtime (modification time) | `PENDING` |
+| meta-006 | Read updates atime (access time) | `PENDING` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `PENDING` | test: Add E2E tests for meta-005/006 timestamps |
 
 ---
 

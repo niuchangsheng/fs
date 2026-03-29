@@ -348,8 +348,8 @@
         "Call Stat()",
         "Verify mtime is updated"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "meta-006",
@@ -363,8 +363,8 @@
         "Call Stat()",
         "Verify atime is updated"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "file-007",
