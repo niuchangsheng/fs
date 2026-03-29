@@ -546,6 +546,40 @@ TEST_F(FileOperationsE2ETest, LseekWithSeekEnd) {
     engine->Close(handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, LseekReturnsNewOffset) {
+    // seek-004: Lseek returns new offset position
+    // Step 1: Open a file
+    auto handle = engine->Open("/lseek_return_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+
+    // Step 2: Write 50 bytes
+    std::vector<uint8_t> data(50);
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = static_cast<uint8_t>(i % 256);
+    }
+    engine->Write(handle, data).get();
+
+    // Step 3: Call Lseek with various offsets and verify each returns the new offset
+
+    // Seek to absolute position 20
+    off_t offset1 = engine->Lseek(handle, 20, Whence::Set);
+    ASSERT_EQ(offset1, 20) << "Lseek with SEEK_SET to 20 should return 20";
+
+    // Seek forward 10 bytes from current (20 + 10 = 30)
+    off_t offset2 = engine->Lseek(handle, 10, Whence::Cur);
+    ASSERT_EQ(offset2, 30) << "Lseek with SEEK_CUR +10 should return 30";
+
+    // Seek to 10 bytes before end (file is 50 bytes, so 50 - 10 = 40)
+    off_t offset3 = engine->Lseek(handle, -10, Whence::End);
+    ASSERT_EQ(offset3, 40) << "Lseek with SEEK_END -10 should return 40";
+
+    // Seek to beginning
+    off_t offset4 = engine->Lseek(handle, 0, Whence::Set);
+    ASSERT_EQ(offset4, 0) << "Lseek with SEEK_SET to 0 should return 0";
+
+    engine->Close(handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

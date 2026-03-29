@@ -281,8 +281,8 @@
         "Call Lseek with various offsets",
         "Verify each call returns the new offset"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "meta-001",
