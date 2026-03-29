@@ -796,6 +796,51 @@ TEST_F(FileOperationsE2ETest, ReaddirListsDirectoryContents) {
     ASSERT_TRUE(entry_names.count("file2.txt")) << "Should contain file2.txt";
 }
 
+TEST_F(FileOperationsE2ETest, NavigateNestedDirectoryPaths) {
+    // dir-003: Navigate nested directory paths
+    // Step 1: Create nested path '/a/b/c'
+    auto mkdir_a = engine->Mkdir("/a").get();
+    ASSERT_EQ(mkdir_a, 0) << "Mkdir /a should succeed";
+
+    auto mkdir_b = engine->Mkdir("/a/b").get();
+    ASSERT_EQ(mkdir_b, 0) << "Mkdir /a/b should succeed";
+
+    auto mkdir_c = engine->Mkdir("/a/b/c").get();
+    ASSERT_EQ(mkdir_c, 0) << "Mkdir /a/b/c should succeed";
+
+    // Step 2: Open file at '/a/b/c/file.txt'
+    auto handle = engine->Open("/a/b/c/file.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr) << "Open /a/b/c/file.txt should succeed";
+
+    // Write some data to verify the file is created
+    std::string content = "Nested path test content";
+    std::vector<uint8_t> data(content.begin(), content.end());
+    auto bytes_written = engine->Write(handle, data).get();
+    ASSERT_EQ(bytes_written, static_cast<ssize_t>(content.size())) << "Write should succeed";
+    engine->Close(handle).get();
+
+    // Step 3: Verify path resolution works by reopening and reading
+    auto read_handle = engine->Open("/a/b/c/file.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(read_handle, nullptr) << "Reopen /a/b/c/file.txt should succeed";
+
+    std::vector<uint8_t> read_buf(200);
+    auto bytes_read = engine->Read(read_handle, read_buf, read_buf.size()).get();
+    std::string actual_content(read_buf.begin(), read_buf.begin() + bytes_read);
+    ASSERT_EQ(actual_content, content) << "Read content should match written data";
+
+    engine->Close(read_handle).get();
+
+    // Also verify intermediate directories exist
+    auto stat_a = engine->Stat("/a").get();
+    ASSERT_TRUE(S_ISDIR(stat_a.st_mode)) << "/a should be a directory";
+
+    auto stat_b = engine->Stat("/a/b").get();
+    ASSERT_TRUE(S_ISDIR(stat_b.st_mode)) << "/a/b should be a directory";
+
+    auto stat_c = engine->Stat("/a/b/c").get();
+    ASSERT_TRUE(S_ISDIR(stat_c.st_mode)) << "/a/b/c should be a directory";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

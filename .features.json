@@ -449,8 +449,8 @@
         "Open file at '/a/b/c/file.txt'",
         "Verify path resolution works"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "dir-004",
