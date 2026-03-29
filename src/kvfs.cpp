@@ -920,6 +920,56 @@ public:
         return promise.get_future();
     }
 
+    std::future<std::vector<KVEngine::DirEntryInfo>> Readdir(const std::string& path) override {
+        std::promise<std::vector<KVEngine::DirEntryInfo>> promise;
+
+        try {
+            // 解析路径获取目录 inode OID
+            uint64_t dir_oid = resolvePath(path);
+            if (dir_oid == 0) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory not found: " + path)));
+                return promise.get_future();
+            }
+
+            // 读取目录 inode
+            std::string dir_key = GetInodeKey(dir_oid);
+            auto [found, dir_data] = device_->Get(dir_key).get();
+            if (!found) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory inode not found: " + std::to_string(dir_oid))));
+                return promise.get_future();
+            }
+
+            Inode dir_inode = Inode::Deserialize(dir_data);
+
+            // 验证是目录
+            if (dir_inode.type != FileType::Directory) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Not a directory: " + path)));
+                return promise.get_future();
+            }
+
+            // 提取目录条目
+            DirData dir = extractDirData(dir_data);
+
+            // 转换为 DirEntryInfo 列表
+            std::vector<KVEngine::DirEntryInfo> entries;
+            for (const auto& entry : dir.entries) {
+                KVEngine::DirEntryInfo info;
+                info.name = entry.name;
+                info.type = entry.type;
+                entries.push_back(info);
+            }
+
+            promise.set_value(entries);
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
+        return promise.get_future();
+    }
+
 private:
     std::unique_ptr<KVDevice> device_;
 };

@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <sys/stat.h>
 
+#include "metadata.h"
+
 namespace kvfs {
 
 /**
@@ -124,6 +126,19 @@ public:
      * @brief 创建目录
      */
     virtual std::future<int> Mkdir(const std::string& path) = 0;
+
+    /**
+     * @brief 目录条目结构
+     */
+    struct DirEntryInfo {
+        std::string name;
+        FileType type;
+    };
+
+    /**
+     * @brief 列出目录内容
+     */
+    virtual std::future<std::vector<DirEntryInfo>> Readdir(const std::string& path) = 0;
 };
 
 /**

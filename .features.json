@@ -437,8 +437,8 @@
         "Call readdir() or equivalent",
         "Verify all entries are listed"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "dir-003",

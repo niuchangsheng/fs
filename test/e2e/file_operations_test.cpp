@@ -765,6 +765,37 @@ TEST_F(FileOperationsE2ETest, MkdirCreatesDirectory) {
     ASSERT_TRUE(S_ISDIR(dir_stat.st_mode)) << "Stat should show directory type";
 }
 
+TEST_F(FileOperationsE2ETest, ReaddirListsDirectoryContents) {
+    // dir-002: List directory contents
+    // Step 1: Create directory with files
+    auto mkdir_result = engine->Mkdir("/testdir").get();
+    ASSERT_EQ(mkdir_result, 0) << "Mkdir should succeed";
+
+    // Create files in the directory
+    auto file1 = engine->Open("/testdir/file1.txt", OpenFlags::Create).get();
+    ASSERT_NE(file1, nullptr);
+    engine->Close(file1).get();
+
+    auto file2 = engine->Open("/testdir/file2.txt", OpenFlags::Create).get();
+    ASSERT_NE(file2, nullptr);
+    engine->Close(file2).get();
+
+    // Step 2: Call readdir() or equivalent
+    auto entries = engine->Readdir("/testdir").get();
+
+    // Step 3: Verify all entries are listed (should have file1.txt and file2.txt)
+    ASSERT_EQ(entries.size(), 2) << "Directory should have 2 entries";
+
+    // Verify the entry names
+    std::set<std::string> entry_names;
+    for (const auto& entry : entries) {
+        entry_names.insert(entry.name);
+    }
+
+    ASSERT_TRUE(entry_names.count("file1.txt")) << "Should contain file1.txt";
+    ASSERT_TRUE(entry_names.count("file2.txt")) << "Should contain file2.txt";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
