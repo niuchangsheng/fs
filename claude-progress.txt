@@ -166,12 +166,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| sync-002 | Fsync flushes metadata to KV device | `PENDING` |
+| sync-002 | Fsync flushes metadata to KV device | `00f264e` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for sync-002 Fsync metadata |
+| `00f264e` | test: Add E2E test for sync-002 Fsync metadata |
 
 ---
 
