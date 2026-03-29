@@ -147,9 +147,9 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `seek-002`: Lseek with SEEK_CUR moves relative to current
-2. Write E2E test for Lseek SEEK_CUR verification
-3. Update `.features.json` to mark seek-002 as passing
+1. Implement `seek-003`: Lseek with SEEK_END moves relative to end
+2. Write E2E test for Lseek SEEK_END verification
+3. Update `.features.json` to mark seek-003 as passing
 
 ---
 
@@ -166,12 +166,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| seek-002 | Lseek with SEEK_CUR moves relative to current | `PENDING` |
+| seek-002 | Lseek with SEEK_CUR moves relative to current | `650b2de` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for seek-002 Lseek SEEK_CUR |
+| `650b2de` | test: Add E2E test for seek-002 Lseek SEEK_CUR |
 
 ---
 
