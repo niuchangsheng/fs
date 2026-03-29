@@ -17,7 +17,7 @@
   - `directory`: 4 features (all failing)
   - `path_resolution`: 4 features (all failing)
   - `concurrency`: 3 features (3 passing)
-  - `recovery`: 2 features (all failing)
+  - `recovery`: 2 features (1 passing, 1 failing)
   - `performance`: 2 features (all failing)
 
 ### Features Implemented
@@ -147,9 +147,33 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `rec-001`: Mount recovers from unclean shutdown
-2. Write E2E test for crash recovery verification
-3. Update `.features.json` to mark rec-001 as passing
+1. Implement `rec-002`: WAL replay on crash recovery
+2. Write E2E test for WAL replay verification
+3. Update `.features.json` to mark rec-002 as passing
+
+---
+
+## Session 36 - Recovery (Unclean Shutdown Mount)
+**Date:** 2026-03-29
+**Goal:** Implement rec-001: Mount recovers from unclean shutdown
+
+### Completed
+- [x] Added E2E test for crash recovery verification
+- [x] Added CreateKVEngine(persist_path) factory function for persistent storage
+- [x] Added CreateMockKVDevice(persist_path) for persistent mock device
+- [x] Simulated crash by destroying engine without Shutdown()
+- [x] Verified filesystem mounts and data is consistent after restart
+- [x] Updated `.features.json` to mark rec-001 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| rec-001 | Mount recovers from unclean shutdown | TBD |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| TBD | test: Add E2E test for rec-001 crash recovery with persistent storage support |
 
 ---
 

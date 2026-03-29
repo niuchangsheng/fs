@@ -44,4 +44,9 @@ public:
  */
 std::unique_ptr<KVDevice> CreateMockKVDevice();
 
+/**
+ * @brief 创建一个使用持久化路径的 Mock KV 设备（用于测试崩溃恢复）
+ */
+std::unique_ptr<KVDevice> CreateMockKVDevice(const std::string& persist_path);
+
 } // namespace kvfs

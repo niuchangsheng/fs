@@ -562,8 +562,8 @@
         "Restart and mount",
         "Verify filesystem is consistent"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "rec-002",

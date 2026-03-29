@@ -1194,3 +1194,67 @@ TEST_F(FileOperationsE2ETest, AtomicInodeUpdateViaCAS) {
 
     engine->Close(read_handle).get();
 }
+
+TEST_F(FileOperationsE2ETest, MountRecoversFromUncleanShutdown) {
+    // rec-001: Mount recovers from unclean shutdown
+    // Use a persistent path for recovery testing
+    const std::string persist_path = "/tmp/kvfs_recovery_test_db";
+
+    // Clean up any existing data
+    std::system(("rm -rf " + persist_path).c_str());
+
+    // Step 1: Create filesystem with data using persistent engine
+    auto engine1 = CreateKVEngine(persist_path);
+    engine1->Init(persist_path).get();
+
+    auto write_handle = engine1->Open("/recovery_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(write_handle, nullptr);
+
+    std::string expected_content = "Data before crash - should be preserved!";
+    std::vector<uint8_t> write_data(expected_content.begin(), expected_content.end());
+    auto bytes_written = engine1->Write(write_handle, write_data).get();
+    ASSERT_EQ(bytes_written, static_cast<ssize_t>(write_data.size()));
+
+    // Flush data to ensure it's persisted
+    auto fsync_result = engine1->Fsync(write_handle).get();
+    ASSERT_EQ(fsync_result, 0) << "Fsync should succeed";
+
+    auto stat_before = engine1->Stat("/recovery_test.txt").get();
+    ASSERT_EQ(stat_before.st_size, static_cast<ssize_t>(expected_content.size()))
+        << "File size should match written data";
+
+    engine1->Close(write_handle).get();
+
+    // Step 2: Simulate crash by NOT calling Shutdown() on engine1
+    // Just destroy the engine directly (simulating unclean shutdown)
+    std::cout << "Simulating crash (not calling Shutdown)..." << std::endl;
+    engine1.reset();  // Destroy without clean shutdown
+
+    // Step 3: Restart and mount (create new engine with same persist path)
+    auto recovered_engine = CreateKVEngine(persist_path);
+    recovered_engine->Init(persist_path).get();
+
+    // Step 4: Verify filesystem is consistent by reading the file
+    auto read_handle = recovered_engine->Open("/recovery_test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(read_handle, nullptr) << "Should be able to open file after recovery";
+
+    std::vector<uint8_t> read_buf(200);
+    auto bytes_read = recovered_engine->Read(read_handle, read_buf, read_buf.size()).get();
+
+    std::string actual_content(read_buf.begin(), read_buf.begin() + bytes_read);
+    ASSERT_EQ(actual_content, expected_content)
+        << "Data should be preserved after unclean shutdown";
+
+    // Verify file metadata is consistent
+    auto stat_after = recovered_engine->Stat("/recovery_test.txt").get();
+    ASSERT_EQ(stat_after.st_size, stat_before.st_size)
+        << "File size should be consistent after recovery";
+
+    recovered_engine->Close(read_handle).get();
+    recovered_engine->Shutdown().get();
+
+    // Clean up
+    std::system(("rm -rf " + persist_path).c_str());
+
+    std::cout << "Recovery successful: filesystem is consistent" << std::endl;
+}

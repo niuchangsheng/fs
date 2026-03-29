@@ -156,4 +156,9 @@ public:
  */
 std::unique_ptr<KVEngine> CreateKVEngine();
 
+/**
+ * @brief 创建使用持久化路径的 KVEngine（用于测试崩溃恢复）
+ */
+std::unique_ptr<KVEngine> CreateKVEngine(const std::string& persist_path);
+
 } // namespace kvfs

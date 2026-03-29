@@ -157,6 +157,8 @@ class KVEngineImpl : public KVEngine {
 public:
     KVEngineImpl() : device_(CreateMockKVDevice()) {}
 
+    KVEngineImpl(const std::string& persist_path) : device_(CreateMockKVDevice(persist_path)) {}
+
     std::future<void> Init(const std::string& device_path) override {
         std::cout << "Initializing KVFS Engine with device: " << device_path << std::endl;
 
@@ -1111,6 +1113,10 @@ private:
  */
 std::unique_ptr<KVEngine> CreateKVEngine() {
     return std::make_unique<KVEngineImpl>();
+}
+
+std::unique_ptr<KVEngine> CreateKVEngine(const std::string& persist_path) {
+    return std::make_unique<KVEngineImpl>(persist_path);
 }
 
 } // namespace kvfs
