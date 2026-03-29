@@ -166,14 +166,14 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| meta-002 | Stat returns file type (regular file only) | `PENDING` |
-| meta-003 | Stat returns access/modify/change times | `PENDING` |
-| meta-004 | Stat returns uid and gid | `PENDING` |
+| meta-002 | Stat returns file type (regular file only) | `80df3d9` |
+| meta-003 | Stat returns access/modify/change times | `80df3d9` |
+| meta-004 | Stat returns uid and gid | `80df3d9` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E tests for meta-002/003/004 Stat metadata |
+| `80df3d9` | test: Add E2E tests for meta-002/003/004 Stat metadata |
 
 ---
 
