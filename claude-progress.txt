@@ -147,9 +147,31 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `sync-001`: Fsync flushes dirty data to KV device
-2. Write E2E test for Fsync data durability verification
-3. Update `.features.json` to mark sync-001 as passing
+1. Implement `sync-002`: Fsync flushes metadata to KV device
+2. Write E2E test for Fsync metadata durability verification
+3. Update `.features.json` to mark sync-002 as passing
+
+---
+
+## Session 24 - Durability Operations (Fsync Data)
+**Date:** 2026-03-29
+**Goal:** Implement sync-001: Fsync flushes dirty data to KV device
+
+### Completed
+- [x] Added E2E test for Fsync data durability verification
+- [x] Verified Fsync() returns 0 on success
+- [x] Verified data is persisted after Fsync
+- [x] Updated `.features.json` to mark sync-001 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| sync-001 | Fsync flushes dirty data to KV device | `PENDING` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `PENDING` | test: Add E2E test for sync-001 Fsync data durability |
 
 ---
 

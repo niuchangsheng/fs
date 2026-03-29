@@ -400,8 +400,8 @@
         "Call Fsync()",
         "Verify data is persisted"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "sync-002",

@@ -698,6 +698,34 @@ TEST_F(FileOperationsE2ETest, LseekReturnsNewOffset) {
     engine->Close(handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, FsyncFlushesData) {
+    // sync-001: Fsync flushes dirty data to KV device
+    // Step 1: Open file for writing
+    auto handle = engine->Open("/sync_fsync_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+
+    // Step 2: Write data
+    std::string content = "Data to be persisted!";
+    std::vector<uint8_t> data(content.begin(), content.end());
+    engine->Write(handle, data).get();
+
+    // Step 3: Call Fsync()
+    auto fsync_result = engine->Fsync(handle).get();
+    ASSERT_EQ(fsync_result, 0) << "Fsync should return 0 on success";
+
+    // Step 4: Verify data is persisted by reopening and reading
+    engine->Close(handle).get();
+
+    auto read_handle = engine->Open("/sync_fsync_test.txt", OpenFlags::ReadOnly).get();
+    std::vector<uint8_t> read_buf(200);
+    auto bytes_read = engine->Read(read_handle, read_buf, read_buf.size()).get();
+
+    std::string actual_content(read_buf.begin(), read_buf.begin() + bytes_read);
+    ASSERT_EQ(actual_content, content) << "Data should be persisted after Fsync";
+
+    engine->Close(read_handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
