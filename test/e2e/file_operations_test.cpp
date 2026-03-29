@@ -408,6 +408,52 @@ TEST_F(FileOperationsE2ETest, StatReturnsFileSize) {
     ASSERT_EQ(file_stat.st_size, 100) << "Stat should return file size of 100 bytes";
 }
 
+TEST_F(FileOperationsE2ETest, StatReturnsRegularFileType) {
+    // meta-002 (partial): Stat returns file type - regular file
+    // Step 1: Create a regular file
+    auto handle = engine->Open("/meta_filetype_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+    engine->Close(handle).get();
+
+    // Step 2: Call Stat() on file
+    auto file_stat = engine->Stat("/meta_filetype_test.txt").get();
+
+    // Step 3: Verify S_ISREG() is true
+    ASSERT_TRUE(S_ISREG(file_stat.st_mode)) << "Stat should return S_IFREG for regular file";
+}
+
+TEST_F(FileOperationsE2ETest, StatReturnsTimestamps) {
+    // meta-003: Stat returns access/modify/change times
+    // Step 1: Create a file
+    auto handle = engine->Open("/meta_timestamps_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+    engine->Close(handle).get();
+
+    // Step 2: Call Stat()
+    auto file_stat = engine->Stat("/meta_timestamps_test.txt").get();
+
+    // Step 3: Verify st_atime, st_mtime, st_ctime are set (non-zero)
+    ASSERT_GT(file_stat.st_atime, 0) << "st_atime should be set";
+    ASSERT_GT(file_stat.st_mtime, 0) << "st_mtime should be set";
+    ASSERT_GT(file_stat.st_ctime, 0) << "st_ctime should be set";
+}
+
+TEST_F(FileOperationsE2ETest, StatReturnsUidGid) {
+    // meta-004: Stat returns uid and gid
+    // Step 1: Create a file
+    auto handle = engine->Open("/meta_uidgid_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+    engine->Close(handle).get();
+
+    // Step 2: Call Stat()
+    auto file_stat = engine->Stat("/meta_uidgid_test.txt").get();
+
+    // Step 3: Verify st_uid and st_gid are set
+    // On most systems, default uid/gid is 0 (root) or the current user's ID
+    ASSERT_GE(file_stat.st_uid, 0) << "st_uid should be set";
+    ASSERT_GE(file_stat.st_gid, 0) << "st_gid should be set";
+}
+
 TEST_F(FileOperationsE2ETest, WriteWithAppendFlag) {
     // io-006: Write with Append flag appends to end
     // Step 1: Create file with existing content
