@@ -63,6 +63,17 @@ std::vector<std::string> splitPath(const std::string& path) {
 }
 
 /**
+ * @brief 将路径成分连接为路径
+ */
+std::string joinPath(const std::vector<std::string>& components, size_t count) {
+    std::string path;
+    for (size_t i = 0; i < count && i < components.size(); ++i) {
+        path += "/" + components[i];
+    }
+    return path.empty() ? "/" : path;
+}
+
+/**
  * @brief 目录条目结构
  */
 struct DirEntry {
@@ -833,6 +844,79 @@ public:
         (void)handle;
         std::promise<int> promise;
         promise.set_value(0);
+        return promise.get_future();
+    }
+
+    std::future<int> Mkdir(const std::string& path) override {
+        std::promise<int> promise;
+
+        try {
+            // 解析路径，获取父目录和目录名
+            std::vector<std::string> components = splitPath(path);
+            if (components.empty()) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Invalid path: " + path)));
+                return promise.get_future();
+            }
+
+            // 获取父目录 OID
+            std::string parent_path = joinPath(components, components.size() - 1);
+            uint64_t parent_oid = resolvePath(parent_path);
+            if (parent_oid == 0) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Parent directory not found: " + parent_path)));
+                return promise.get_future();
+            }
+
+            // 检查目录是否已存在
+            uint64_t existing_oid = resolvePath(path);
+            if (existing_oid != 0) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Directory already exists: " + path)));
+                return promise.get_future();
+            }
+
+            // 创建新目录 inode
+            std::string sb_key = GetSuperblockKey();
+            auto [sb_found, sb_data] = device_->Get(sb_key).get();
+            if (!sb_found) {
+                promise.set_exception(std::make_exception_ptr(
+                    std::runtime_error("Superblock not found")));
+                return promise.get_future();
+            }
+            Superblock sb = Superblock::Deserialize(sb_data);
+            uint64_t dir_oid = sb.next_inode_oid;
+            sb.next_inode_oid++;
+
+            Inode dir_inode{};
+            dir_inode.oid = dir_oid;
+            dir_inode.type = FileType::Directory;
+            dir_inode.mode = 0755;
+            dir_inode.size = 0;
+            dir_inode.link_count = 1;
+            dir_inode.is_inline = true;
+            dir_inode.inline_data_len = 0;
+
+            auto now = std::chrono::system_clock::now().time_since_epoch().count();
+            dir_inode.atime = dir_inode.mtime = dir_inode.ctime = now;
+
+            // 写入目录 inode
+            std::string dir_key = GetInodeKey(dir_oid);
+            std::vector<uint8_t> dir_data = dir_inode.Serialize();
+            device_->Put(dir_key, dir_data).get();
+
+            // 写入父目录条目
+            createDirEntry(parent_oid, components.back(), dir_oid, FileType::Directory);
+
+            // 更新 superblock
+            device_->Put(sb_key, sb.Serialize()).get();
+
+            std::cout << "Created new directory: " << path << " (inode " << dir_oid << ")" << std::endl;
+            promise.set_value(0);
+        } catch (const std::exception& e) {
+            promise.set_exception(std::current_exception());
+        }
+
         return promise.get_future();
     }
 

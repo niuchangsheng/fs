@@ -752,6 +752,19 @@ TEST_F(FileOperationsE2ETest, FsyncFlushesMetadata) {
     ASSERT_GT(stat.st_mtime, 0) << "mtime should be persisted after Fsync";
 }
 
+TEST_F(FileOperationsE2ETest, MkdirCreatesDirectory) {
+    // dir-001: Create directory with mkdir semantics
+    // Step 1: Call mkdir('/newdir')
+    auto mkdir_result = engine->Mkdir("/newdir").get();
+    ASSERT_EQ(mkdir_result, 0) << "Mkdir should return 0 on success";
+
+    // Step 2: Verify directory is created by calling Stat
+    auto dir_stat = engine->Stat("/newdir").get();
+
+    // Step 3: Verify Stat shows directory type (S_ISDIR is true)
+    ASSERT_TRUE(S_ISDIR(dir_stat.st_mode)) << "Stat should show directory type";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

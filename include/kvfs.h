@@ -119,6 +119,11 @@ public:
      * @brief 强制将脏数据和元数据刷入 KV 硬件
      */
     virtual std::future<int> Fsync(std::shared_ptr<FileHandle> handle) = 0;
+
+    /**
+     * @brief 创建目录
+     */
+    virtual std::future<int> Mkdir(const std::string& path) = 0;
 };
 
 /**
