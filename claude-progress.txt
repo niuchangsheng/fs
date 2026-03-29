@@ -166,12 +166,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| seek-004 | Lseek returns new offset position | `PENDING` |
+| seek-004 | Lseek returns new offset position | `c45519b` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for seek-004 Lseek return value |
+| `c45519b` | test: Add E2E test for seek-004 Lseek return value |
 
 ---
 
