@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| dir-003 | Navigate nested directory paths | `PENDING` |
+| dir-003 | Navigate nested directory paths | `689d7d4` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for dir-003 nested directory paths |
+| `689d7d4` | test: Add E2E test for dir-003 nested directory paths |
 
 ---
 
