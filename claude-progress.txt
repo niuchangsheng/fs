@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| perf-001 | Inline data for small files (<4KB) | TBD |
+| perf-001 | Inline data for small files (<4KB) | `0b3920d` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| TBD | test: Add E2E test for perf-001 inline data storage |
+| `0b3920d` | test: Add E2E test for perf-001 inline data storage |
 
 ---
 

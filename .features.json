@@ -590,7 +590,8 @@
         "Verify no separate chunk KV is created"
       ],
       "status": "passing",
-      "tested": true
+      "tested": true,
+      "commit": "0b3920d"
     },
     {
       "id": "perf-002",
