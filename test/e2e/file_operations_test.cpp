@@ -521,6 +521,31 @@ TEST_F(FileOperationsE2ETest, LseekWithSeekCur) {
     engine->Close(handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, LseekWithSeekEnd) {
+    // seek-003: Lseek with SEEK_END moves relative to end
+    // Step 1: Create file with 100 bytes content
+    auto handle = engine->Open("/lseek_seekend_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+
+    std::vector<uint8_t> data(100);
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = static_cast<uint8_t>(i % 256);
+    }
+    engine->Write(handle, data).get();
+
+    // Step 2: Call Lseek(handle, -10, Whence::End)
+    off_t new_offset = engine->Lseek(handle, -10, Whence::End);
+
+    // Step 3: Verify returned offset is 90 (100 - 10)
+    ASSERT_EQ(new_offset, 90) << "Lseek with SEEK_END should return offset relative to end";
+
+    // Verify the handle's offset is also updated to 90
+    ASSERT_EQ(handle->GetOffset(), static_cast<uint64_t>(90))
+        << "Handle offset should be updated to 90";
+
+    engine->Close(handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

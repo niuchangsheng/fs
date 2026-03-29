@@ -269,8 +269,8 @@
         "Call Lseek(handle, -10, Whence::End)",
         "Verify returned offset is 90"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "seek-004",
