@@ -16,7 +16,7 @@
   - `durability`: 2 features (all failing)
   - `directory`: 4 features (all failing)
   - `path_resolution`: 4 features (all failing)
-  - `concurrency`: 3 features (all failing)
+  - `concurrency`: 3 features (1 passing, 2 failing)
   - `recovery`: 2 features (all failing)
   - `performance`: 2 features (all failing)
 
@@ -147,13 +147,58 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `path-004`: Handle trailing slashes
-2. Write E2E test for trailing slash resolution verification
-3. Update `.features.json` to mark path-004 as passing
+1. Implement `conv-002`: Concurrent writes use CoW semantics
+2. Write E2E test for concurrent writes with CAS verification
+3. Update `.features.json` to mark conv-002 as passing
 
 ---
 
-## Session 32 - Path Resolution (. and .. components)
+## Session 33 - Concurrency (Concurrent Reads)
+**Date:** 2026-03-29
+**Goal:** Implement conv-001: Concurrent reads on same file
+
+### Completed
+- [x] Added E2E test for concurrent reads verification
+- [x] Spawned 5 threads to read the same file simultaneously
+- [x] Verified all threads can read the file independently
+- [x] Verified all reads return correct content
+- [x] Updated `.features.json` to mark conv-001 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| conv-001 | Concurrent reads on same file | TBD |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| TBD | test: Add E2E test for conv-001 concurrent reads |
+
+---
+
+## Session 32 - Path Resolution (Trailing Slashes)
+**Date:** 2026-03-29
+**Goal:** Implement path-004: Handle trailing slashes
+
+### Completed
+- [x] Added E2E test for trailing slash resolution verification
+- [x] Verified Stat('/mydir/') works with trailing slash
+- [x] splitPath() already skips empty components from trailing slashes
+- [x] Updated `.features.json` to mark path-004 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| path-004 | Handle trailing slashes | `TBD` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| TBD | test: Add E2E test for path-004 trailing slashes |
+
+---
+
+## Session 31 - Path Resolution (. and .. components)
 **Date:** 2026-03-29
 **Goal:** Implement path-003: Handle . and .. path components
 
@@ -175,7 +220,7 @@
 
 ---
 
-## Session 31 - Path Resolution (Relative Path)
+## Session 30 - Path Resolution (Relative Path)
 **Date:** 2026-03-29
 **Goal:** Implement path-002: Resolve relative path from current
 

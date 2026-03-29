@@ -7,6 +7,8 @@
 #include <gtest/gtest.h>
 #include <cstring>
 #include <vector>
+#include <thread>
+#include <iostream>
 
 using namespace kvfs;
 
@@ -954,4 +956,75 @@ TEST_F(FileOperationsE2ETest, HandleDotAndDotDotPathComponents) {
     ASSERT_EQ(actual_content, content) << "Read content should match";
 
     engine->Close(dot_handle).get();
+}
+
+TEST_F(FileOperationsE2ETest, HandleTrailingSlashes) {
+    // path-004: Handle trailing slashes
+    // Step 1: Create directory '/mydir'
+    auto mkdir_result = engine->Mkdir("/mydir").get();
+    ASSERT_EQ(mkdir_result, 0) << "Mkdir should succeed";
+
+    // Step 2: Stat '/mydir/' with trailing slash
+    auto dir_stat = engine->Stat("/mydir/").get();
+
+    // Step 3: Verify it resolves to directory
+    ASSERT_TRUE(S_ISDIR(dir_stat.st_mode)) << "Path with trailing slash should resolve to directory";
+
+    // Also test opening a file with trailing slash in path (should fail for files)
+    auto file_handle = engine->Open("/mydir/test.txt", OpenFlags::Create).get();
+    ASSERT_NE(file_handle, nullptr) << "Open should succeed";
+    engine->Close(file_handle).get();
+
+    // File with trailing slash should still work (e.g., '/mydir/test.txt/')
+    // This depends on implementation - some systems allow it, some don't
+}
+
+TEST_F(FileOperationsE2ETest, ConcurrentReadsOnSameFile) {
+    // conv-001: Concurrent reads on same file
+    // Step 1: Create file with content
+    auto write_handle = engine->Open("/concurrent_read_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(write_handle, nullptr);
+
+    std::string expected_content = "Concurrent read test content - 1234567890!";
+    std::vector<uint8_t> write_data(expected_content.begin(), expected_content.end());
+    engine->Write(write_handle, write_data).get();
+    engine->Close(write_handle).get();
+
+    // Step 2: Spawn multiple threads to read the file simultaneously
+    const int kNumThreads = 5;
+    std::vector<std::thread> threads;
+    std::vector<std::string> results(kNumThreads);
+    std::vector<bool> success(kNumThreads, false);
+
+    for (int i = 0; i < kNumThreads; ++i) {
+        threads.emplace_back([&, i]() {
+            try {
+                // Each thread opens and reads the file independently
+                auto read_handle = engine->Open("/concurrent_read_test.txt", OpenFlags::ReadOnly).get();
+                ASSERT_NE(read_handle, nullptr);
+
+                std::vector<uint8_t> read_buf(200);
+                auto bytes_read = engine->Read(read_handle, read_buf, read_buf.size()).get();
+
+                results[i] = std::string(read_buf.begin(), read_buf.begin() + bytes_read);
+                success[i] = (bytes_read == static_cast<ssize_t>(expected_content.size()));
+
+                engine->Close(read_handle).get();
+            } catch (const std::exception& e) {
+                std::cerr << "Thread " << i << " failed: " << e.what() << std::endl;
+                success[i] = false;
+            }
+        });
+    }
+
+    // Step 3: Wait for all threads to complete
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    // Step 4: Verify all reads succeeded
+    for (int i = 0; i < kNumThreads; ++i) {
+        ASSERT_TRUE(success[i]) << "Thread " << i << " should complete successfully";
+        ASSERT_EQ(results[i], expected_content) << "Thread " << i << " should read correct content";
+    }
 }

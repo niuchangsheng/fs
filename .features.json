@@ -509,8 +509,8 @@
         "Stat '/mydir/' with trailing slash",
         "Verify it resolves to directory"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "conv-001",
@@ -522,8 +522,8 @@
         "Each thread reads the file simultaneously",
         "Verify all reads succeed"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "conv-002",
