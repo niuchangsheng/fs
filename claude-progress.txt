@@ -165,12 +165,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| meta-001 | Stat returns file size | `PENDING` |
+| meta-001 | Stat returns file size | `537a272` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for meta-001 Stat file size |
+| `537a272` | test: Add E2E test for meta-001 Stat file size |
 
 ---
 
