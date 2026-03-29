@@ -549,7 +549,8 @@
         "Verify concurrent modifications are serialized"
       ],
       "status": "passing",
-      "tested": true
+      "tested": true,
+      "commit": "ac21926"
     },
     {
       "id": "rec-001",
