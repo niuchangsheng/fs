@@ -166,12 +166,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| sync-001 | Fsync flushes dirty data to KV device | `PENDING` |
+| sync-001 | Fsync flushes dirty data to KV device | `6249edc` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for sync-001 Fsync data durability |
+| `6249edc` | test: Add E2E test for sync-001 Fsync data durability |
 
 ---
 
