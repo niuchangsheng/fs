@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| path-001 | Resolve absolute path from root | `PENDING` |
+| path-001 | Resolve absolute path from root | `4e65512` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | test: Add E2E test for path-001 absolute path resolution |
+| `4e65512` | test: Add E2E test for path-001 absolute path resolution |
 
 ---
 
