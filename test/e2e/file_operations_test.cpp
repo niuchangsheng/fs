@@ -491,6 +491,36 @@ TEST_F(FileOperationsE2ETest, LseekWithSeekSet) {
     engine->Close(handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, LseekWithSeekCur) {
+    // seek-002: Lseek with SEEK_CUR moves relative to current
+    // Step 1: Open a file
+    auto handle = engine->Open("/lseek_seekcur_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+
+    // Step 2: Write 50 bytes to move offset to 50
+    std::vector<uint8_t> data(50);
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = static_cast<uint8_t>(i % 256);
+    }
+    engine->Write(handle, data).get();
+
+    // Verify current offset is 50
+    ASSERT_EQ(handle->GetOffset(), static_cast<uint64_t>(50))
+        << "Offset should be 50 after writing 50 bytes";
+
+    // Step 3: Call Lseek(handle, 10, Whence::Cur)
+    off_t new_offset = engine->Lseek(handle, 10, Whence::Cur);
+
+    // Step 4: Verify returned offset is 60 (50 + 10)
+    ASSERT_EQ(new_offset, 60) << "Lseek with SEEK_CUR should return offset relative to current";
+
+    // Verify the handle's offset is also updated to 60
+    ASSERT_EQ(handle->GetOffset(), static_cast<uint64_t>(60))
+        << "Handle offset should be updated to 60";
+
+    engine->Close(handle).get();
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";

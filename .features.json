@@ -257,8 +257,8 @@
         "Call Lseek(handle, 10, Whence::Cur)",
         "Verify returned offset is 60"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "seek-003",
