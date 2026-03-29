@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| dir-004 | Remove empty directory | `PENDING` |
+| dir-004 | Remove empty directory | `d08c312` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | feat: Implement dir-004 Rmdir removes empty directory |
+| `d08c312` | feat: Implement dir-004 Rmdir removes empty directory |
 
 ---
 
