@@ -147,9 +147,31 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `sync-002`: Fsync flushes metadata to KV device
-2. Write E2E test for Fsync metadata durability verification
-3. Update `.features.json` to mark sync-002 as passing
+1. Implement `dir-001`: Create directory with mkdir semantics
+2. Write E2E test for mkdir verification
+3. Update `.features.json` to mark dir-001 as passing
+
+---
+
+## Session 25 - Durability Operations (Fsync Metadata)
+**Date:** 2026-03-29
+**Goal:** Implement sync-002: Fsync flushes metadata to KV device
+
+### Completed
+- [x] Added E2E test for Fsync metadata durability verification
+- [x] Verified Fsync() returns 0 on success
+- [x] Verified metadata (size, mtime) is persisted after Fsync
+- [x] Updated `.features.json` to mark sync-002 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| sync-002 | Fsync flushes metadata to KV device | `PENDING` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `PENDING` | test: Add E2E test for sync-002 Fsync metadata |
 
 ---
 

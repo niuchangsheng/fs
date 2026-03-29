@@ -726,6 +726,32 @@ TEST_F(FileOperationsE2ETest, FsyncFlushesData) {
     engine->Close(read_handle).get();
 }
 
+TEST_F(FileOperationsE2ETest, FsyncFlushesMetadata) {
+    // sync-002: Fsync flushes metadata to KV device
+    // Step 1: Open file
+    auto handle = engine->Open("/sync_fsync_meta_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+    engine->Close(handle).get();
+
+    // Step 2: Modify metadata (size, mtime) by writing data
+    auto write_handle = engine->Open("/sync_fsync_meta_test.txt", OpenFlags::ReadWrite).get();
+    std::vector<uint8_t> data(100);
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = static_cast<uint8_t>(i % 256);
+    }
+    engine->Write(write_handle, data).get();
+
+    // Step 3: Call Fsync()
+    auto fsync_result = engine->Fsync(write_handle).get();
+    ASSERT_EQ(fsync_result, 0) << "Fsync should return 0 on success";
+    engine->Close(write_handle).get();
+
+    // Step 4: Verify metadata is persisted by reopening and checking Stat
+    auto stat = engine->Stat("/sync_fsync_meta_test.txt").get();
+    ASSERT_EQ(stat.st_size, 100) << "File size should be persisted after Fsync";
+    ASSERT_GT(stat.st_mtime, 0) << "mtime should be persisted after Fsync";
+}
+
 TEST_F(FileOperationsE2ETest, MultipleFilesCoexist) {
     // TODO: Implement for multiple files
     GTEST_SKIP() << "File operations not yet implemented";
