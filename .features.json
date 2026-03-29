@@ -536,7 +536,8 @@
         "Verify no data corruption via CAS"
       ],
       "status": "passing",
-      "tested": true
+      "tested": true,
+      "commit": "5f2ab64"
     },
     {
       "id": "conv-003",

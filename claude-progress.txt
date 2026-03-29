@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| conv-002 | Concurrent writes use CoW semantics | TBD |
+| conv-002 | Concurrent writes use CoW semantics | `5f2ab64` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| TBD | test: Add E2E test for conv-002 concurrent writes |
+| `5f2ab64` | test: Add E2E test for conv-002 concurrent writes |
 
 ---
 
