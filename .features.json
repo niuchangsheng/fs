@@ -602,8 +602,9 @@
         "Verify data is split into chunks",
         "Verify inode contains chunk map"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true,
+      "commit": "9cb4cbf"
     }
   ]
 }

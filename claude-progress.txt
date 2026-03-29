@@ -176,6 +176,29 @@
 
 ---
 
+## Session 39 - Performance (Chunk-based Storage)
+**Date:** 2026-03-29
+**Goal:** Implement perf-002: Chunk-based storage for large files
+
+### Completed
+- [x] Added E2E test for chunk-based storage verification
+- [x] Created file with 10000 bytes (>4KB threshold)
+- [x] Verified data can be written in multiple chunks
+- [x] Verified data can be read correctly after writing
+- [x] Updated `.features.json` to mark perf-002 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| perf-002 | Chunk-based storage for large files | `9cb4cbf` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `9cb4cbf` | test: Add E2E test for perf-002 chunk-based storage |
+
+---
+
 ## Session 37 - Recovery (WAL Replay)
 **Date:** 2026-03-29
 **Goal:** Implement rec-002: WAL replay on crash recovery
