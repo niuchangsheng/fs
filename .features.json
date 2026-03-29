@@ -497,8 +497,8 @@
         "Open with path '/a/b/../b/./test.txt'",
         "Verify file is found"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "path-004",

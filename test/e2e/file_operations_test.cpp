@@ -926,3 +926,32 @@ TEST_F(FileOperationsE2ETest, ResolveRelativePathFromCurrent) {
 
     engine->Close(rel_handle).get();
 }
+
+TEST_F(FileOperationsE2ETest, HandleDotAndDotDotPathComponents) {
+    // path-003: Handle . and .. path components
+    // Step 1: Create nested directories and file
+    auto mkdir_a = engine->Mkdir("/a").get();
+    ASSERT_EQ(mkdir_a, 0) << "Mkdir /a should succeed";
+
+    auto mkdir_b = engine->Mkdir("/a/b").get();
+    ASSERT_EQ(mkdir_b, 0) << "Mkdir /a/b should succeed";
+
+    auto handle = engine->Open("/a/b/test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr) << "Open should succeed";
+    std::string content = "Dot path test";
+    std::vector<uint8_t> data(content.begin(), content.end());
+    engine->Write(handle, data).get();
+    engine->Close(handle).get();
+
+    // Step 2: Open with path '/a/b/../b/./test.txt'
+    auto dot_handle = engine->Open("/a/b/../b/./test.txt", OpenFlags::ReadOnly).get();
+    ASSERT_NE(dot_handle, nullptr) << "Open with . and .. path should succeed";
+
+    // Verify we can read the file
+    std::vector<uint8_t> read_buf(200);
+    auto bytes_read = engine->Read(dot_handle, read_buf, read_buf.size()).get();
+    std::string actual_content(read_buf.begin(), read_buf.begin() + bytes_read);
+    ASSERT_EQ(actual_content, content) << "Read content should match";
+
+    engine->Close(dot_handle).get();
+}
