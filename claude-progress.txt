@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| dir-002 | List directory contents | `PENDING` |
+| dir-002 | List directory contents | `02f6493` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| `PENDING` | feat: Implement dir-002 Readdir lists directory contents |
+| `02f6493` | feat: Implement dir-002 Readdir lists directory contents |
 
 ---
 
