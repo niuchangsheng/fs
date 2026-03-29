@@ -523,7 +523,8 @@
         "Verify all reads succeed"
       ],
       "status": "passing",
-      "tested": true
+      "tested": true,
+      "commit": "5c1bffb"
     },
     {
       "id": "conv-002",

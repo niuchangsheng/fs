@@ -167,12 +167,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| conv-001 | Concurrent reads on same file | TBD |
+| conv-001 | Concurrent reads on same file | `5c1bffb` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| TBD | test: Add E2E test for conv-001 concurrent reads |
+| `5c1bffb` | test: Add E2E test for conv-001 concurrent reads |
 
 ---
 
