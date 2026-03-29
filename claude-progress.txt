@@ -147,9 +147,30 @@
 - Keep code clean and ready for merge to main
 
 ## Next Session
-1. Implement `meta-001`: Stat returns file size
-2. Write E2E test for Stat file size verification
-3. Update `.features.json` to mark meta-001 as passing
+1. Implement `meta-002`: Stat returns file type (regular/directory)
+2. Write E2E test for Stat file type verification
+3. Update `.features.json` to mark meta-002 as passing
+
+---
+
+## Session 21 - Metadata Operations (File Size)
+**Date:** 2026-03-29
+**Goal:** Implement meta-001: Stat returns file size
+
+### Completed
+- [x] Added E2E test for Stat file size verification
+- [x] Verified Stat() returns correct st_size (100 bytes)
+- [x] Updated `.features.json` to mark meta-001 as passing
+
+### Features Implemented
+| Feature ID | Description | Commit |
+|------------|-------------|--------|
+| meta-001 | Stat returns file size | `PENDING` |
+
+### Infrastructure Commits
+| Commit | Description |
+|--------|-------------|
+| `PENDING` | test: Add E2E test for meta-001 Stat file size |
 
 ---
 

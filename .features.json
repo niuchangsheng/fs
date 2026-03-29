@@ -293,8 +293,8 @@
         "Call Stat() on file path",
         "Verify st_size is 100"
       ],
-      "status": "failing",
-      "tested": false
+      "status": "passing",
+      "tested": true
     },
     {
       "id": "meta-002",

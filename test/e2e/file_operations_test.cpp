@@ -388,6 +388,26 @@ TEST_F(FileOperationsE2ETest, WriteUpdatesFileSize) {
     ASSERT_EQ(stat_after.st_size, 50) << "File size should be 50 after writing 50 bytes";
 }
 
+TEST_F(FileOperationsE2ETest, StatReturnsFileSize) {
+    // meta-001: Stat returns file size
+    // Step 1: Create file and write 100 bytes
+    auto handle = engine->Open("/meta_filesize_test.txt", OpenFlags::Create).get();
+    ASSERT_NE(handle, nullptr);
+
+    std::vector<uint8_t> data(100);
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = static_cast<uint8_t>(i % 256);
+    }
+    engine->Write(handle, data).get();
+    engine->Close(handle).get();
+
+    // Step 2: Call Stat() on file path
+    auto file_stat = engine->Stat("/meta_filesize_test.txt").get();
+
+    // Step 3: Verify st_size is 100
+    ASSERT_EQ(file_stat.st_size, 100) << "Stat should return file size of 100 bytes";
+}
+
 TEST_F(FileOperationsE2ETest, WriteWithAppendFlag) {
     // io-006: Write with Append flag appends to end
     // Step 1: Create file with existing content
