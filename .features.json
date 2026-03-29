@@ -577,7 +577,8 @@
         "Restart and verify WAL replay recovers data"
       ],
       "status": "passing",
-      "tested": true
+      "tested": true,
+      "commit": "bb36b45"
     },
     {
       "id": "perf-001",

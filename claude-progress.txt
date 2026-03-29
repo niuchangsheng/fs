@@ -168,12 +168,12 @@
 ### Features Implemented
 | Feature ID | Description | Commit |
 |------------|-------------|--------|
-| rec-002 | WAL replay on crash recovery | TBD |
+| rec-002 | WAL replay on crash recovery | `bb36b45` |
 
 ### Infrastructure Commits
 | Commit | Description |
 |--------|-------------|
-| TBD | test: Add E2E test for rec-002 WAL replay recovery |
+| `bb36b45` | test: Add E2E test for rec-002 WAL replay recovery |
 
 ---
 
